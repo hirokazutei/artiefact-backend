@@ -67,32 +67,32 @@ func GetProfileByPk(db Queryer, pk0 int64) (*Profile, error) {
 	return &r, nil
 }
 
-// Profile_picture represents public.profile picture
-type Profile_picture struct {
+// ProfilePicture represents public.profile_picture
+type ProfilePicture struct {
 	UserID    int64          // user_id
 	Thumbnail sql.NullString // thumbnail
 	Image     sql.NullString // image
 }
 
-// Create inserts the Profile_picture to the database.
-func (r *Profile_picture) Create(db Queryer) error {
+// Create inserts the ProfilePicture to the database.
+func (r *ProfilePicture) Create(db Queryer) error {
 	_, err := db.Exec(
-		`INSERT INTO profile picture (user_id, thumbnail, image) VALUES ($1, $2, $3)`,
+		`INSERT INTO profile_picture (user_id, thumbnail, image) VALUES ($1, $2, $3)`,
 		&r.UserID, &r.Thumbnail, &r.Image)
 	if err != nil {
-		return errors.Wrap(err, "failed to insert profile picture")
+		return errors.Wrap(err, "failed to insert profile_picture")
 	}
 	return nil
 }
 
-// GetProfile_pictureByPk select the Profile_picture from the database.
-func GetProfile_pictureByPk(db Queryer, pk0 int64) (*Profile_picture, error) {
-	var r Profile_picture
+// GetProfilePictureByPk select the ProfilePicture from the database.
+func GetProfilePictureByPk(db Queryer, pk0 int64) (*ProfilePicture, error) {
+	var r ProfilePicture
 	err := db.QueryRow(
-		`SELECT user_id, thumbnail, image FROM profile picture WHERE user_id = $1`,
+		`SELECT user_id, thumbnail, image FROM profile_picture WHERE user_id = $1`,
 		pk0).Scan(&r.UserID, &r.Thumbnail, &r.Image)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to select profile picture")
+		return nil, errors.Wrap(err, "failed to select profile_picture")
 	}
 	return &r, nil
 }
@@ -163,16 +163,16 @@ func GetUserAgreementByPk(db Queryer, pk0 int64) (*UserAgreement, error) {
 
 // Username represents public.username
 type Username struct {
-	UserID      int64  // user_id
-	LowerName   string // lower_name
-	DisplayName string // display_name
+	UserID        int64  // user_id
+	UsernameLower string // username_lower
+	UsernameRaw   string // username_raw
 }
 
 // Create inserts the Username to the database.
 func (r *Username) Create(db Queryer) error {
 	_, err := db.Exec(
-		`INSERT INTO username (user_id, lower_name, display_name) VALUES ($1, $2, $3)`,
-		&r.UserID, &r.LowerName, &r.DisplayName)
+		`INSERT INTO username (user_id, username_lower, username_raw) VALUES ($1, $2, $3)`,
+		&r.UserID, &r.UsernameLower, &r.UsernameRaw)
 	if err != nil {
 		return errors.Wrap(err, "failed to insert username")
 	}
@@ -183,8 +183,8 @@ func (r *Username) Create(db Queryer) error {
 func GetUsernameByPk(db Queryer, pk0 int64) (*Username, error) {
 	var r Username
 	err := db.QueryRow(
-		`SELECT user_id, lower_name, display_name FROM username WHERE user_id = $1`,
-		pk0).Scan(&r.UserID, &r.LowerName, &r.DisplayName)
+		`SELECT user_id, username_lower, username_raw FROM username WHERE user_id = $1`,
+		pk0).Scan(&r.UserID, &r.UsernameLower, &r.UsernameRaw)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select username")
 	}

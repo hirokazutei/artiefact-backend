@@ -36,8 +36,8 @@ class Username(Base):
     __tablename__ = 'username'
 
     user_id = Column(BIGINT, ForeignKey('user.id'), primary_key=True)
-    lower_name = Column(TEXT, nullable=False, unique=True, index=True)
-    display_name = Column(TEXT, nullable=False)
+    username_lower = Column(TEXT, nullable=False, unique=True, index=True)
+    username_raw = Column(TEXT, nullable=False)
 
     user = relationship('User', backref=backref('username', uselist=False))
 
@@ -59,10 +59,10 @@ class Profile(Base):
 class ProfilePicture(Base):
     """Profile Picture"""
 
-    __tablename__ = 'profile picture'
+    __tablename__ = 'profile_picture'
 
     user_id = Column(BIGINT, ForeignKey('user.id'), primary_key=True)
     thumbnail = Column(TEXT, nullable=True)
     image = Column(TEXT, nullable=True)
 
-    user = relationship('User', backref=backref('profile', uselist=False))
+    user = relationship('User', backref=backref('profile_picture', uselist=False))
