@@ -7,13 +7,13 @@ import (
 	"github.com/jackc/pgx/stdlib"
 )
 
-// Database Struct
-type Database struct {
-	DatabaseConnection
+// DB Struct
+type DB struct {
+	DBer
 }
 
-// QueryMaker Interface
-type QueryMaker interface {
+// Queryer Interface
+type Queryer interface {
 	Exec(string, ...interface{}) (sql.Result, error)
 	Query(string, ...interface{}) (*sql.Rows, error)
 	QueryRow(string, ...interface{}) *sql.Row
@@ -21,21 +21,21 @@ type QueryMaker interface {
 
 // TransactionMaker Interface
 type TransactionMaker interface {
-	QueryMaker
+	Queryer
 	Commit() error
 	Rollback() error
 }
 
-// DatabaseConnection Interface
-type DatabaseConnection interface {
-	QueryMaker
+// DBer Interface
+type DBer interface {
+	Queryer
 	Begin() (*sql.Tx, error)
 	Close() error
 	Ping() error
 }
 
 // NewDatabase create a new DatabaseObject
-func NewDatabase(config *AppConfig) (*Database, error) {
+func NewDatabase(config *AppConfig) (*DB, error) {
 	databaseConfigureation := &stdlib.DriverConfig{
 		ConnConfig: pgx.ConnConfig{
 			Host:     config.DatabaseHost,
@@ -53,5 +53,5 @@ func NewDatabase(config *AppConfig) (*Database, error) {
 	database.SetMaxOpenConns(20)
 	database.SetMaxIdleConns(10)
 	// db.SetConnMaxLifetime(time.Second * 10)
-	return &Database{database}, nil
+	return &DB{database}, nil
 }

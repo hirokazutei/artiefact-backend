@@ -3,7 +3,14 @@ package artiefact
 import (
 	"fmt"
 	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
+
+type IapiHandler struct {
+	handler func(http.ResponseWriter, *http.Request) (int, interface{}, error)
+}
 
 // Serve serves the server
 func Serve(confPath string) {
@@ -20,4 +27,16 @@ func Serve(confPath string) {
 	}
 	fmt.Printf("%+v\n", database)
 
+	// set up root context
+	app, err := NewApp(appConfig, database)
+	if err != nil {
+		log.Fatalf("failed to create app: %s", err)
+	}
+
+	// application routing
+	router := mux.NewRouter()
+
+	// user
+	userApp := &UserApp{app}
+	router.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
 }

@@ -10,10 +10,10 @@ Base = declarative_base(metadata=meta)
 session = scoped_session(sessionmaker(bind=engine))
 
 from .account import (
-    User, Username, ProfilePicture, Profile
+    ArtiefactUser, Username, ProfilePicture, Profile
 )  # NOQA
 
 __all__ = [
     # account
-    'User', 'Username', 'Profile', 'ProfilePicture'
+    'ArtiefactUser', 'Username', 'Profile', 'ProfilePicture'
 ]

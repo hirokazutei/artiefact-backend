@@ -6,10 +6,10 @@ from sqlalchemy.dialects.postgresql import TEXT, BIGINT, SMALLINT
 from . import Base
 
 
-class User(Base):
-    """User"""
+class ArtiefactUser(Base):
+    """Artiefact User"""
 
-    __tablename__ = 'user'
+    __tablename__ = 'artiefact_user'
 
     id = Column(BIGINT, primary_key=True)
     password = Column(TEXT, nullable=False)
@@ -25,7 +25,7 @@ class UserAgreement(Base):
     __tablename__ = 'user_agreement'
 
     id = Column(BIGINT, primary_key=True)
-    user_id = Column(BIGINT, ForeignKey('user.id'), nullable=False)
+    user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), nullable=False)
     agreement_type = Column(TEXT, nullable=False)
     agreement_date = Column(DateTime(timezone=True), nullable=False)
 
@@ -35,11 +35,11 @@ class Username(Base):
 
     __tablename__ = 'username'
 
-    user_id = Column(BIGINT, ForeignKey('user.id'), primary_key=True)
+    user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), primary_key=True)
     username_lower = Column(TEXT, nullable=False, unique=True, index=True)
     username_raw = Column(TEXT, nullable=False)
 
-    user = relationship('User', backref=backref('username', uselist=False))
+    user = relationship('ArtiefactUser', backref=backref('username', uselist=False))
 
 
 class Profile(Base):
@@ -47,13 +47,13 @@ class Profile(Base):
 
     __tablename__ = 'profile'
 
-    user_id = Column(BIGINT, ForeignKey('user.id'), primary_key=True)
+    user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), primary_key=True)
     name = Column(TEXT, nullable=True)
     website = Column(TEXT, nullable=True)
     bio = Column(TEXT, nullable=True)
     gender = Column(SMALLINT, nullable=True)
 
-    user = relationship('User', backref=backref('profile', uselist=False))
+    user = relationship('ArtiefactUser', backref=backref('profile', uselist=False))
 
 
 class ProfilePicture(Base):
@@ -61,8 +61,8 @@ class ProfilePicture(Base):
 
     __tablename__ = 'profile_picture'
 
-    user_id = Column(BIGINT, ForeignKey('user.id'), primary_key=True)
+    user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), primary_key=True)
     thumbnail = Column(TEXT, nullable=True)
     image = Column(TEXT, nullable=True)
 
-    user = relationship('User', backref=backref('profile_picture', uselist=False))
+    user = relationship('ArtiefactUser', backref=backref('profile_picture', uselist=False))

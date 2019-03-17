@@ -35,6 +35,39 @@ func GetAlembicVersionByPk(db Queryer, pk0 interface{}) (*AlembicVersion, error)
 	return &r, nil
 }
 
+// ArtiefactUser represents public.artiefact_user
+type ArtiefactUser struct {
+	ID           int64     // id
+	Password     string    // password
+	Email        string    // email
+	Birthday     time.Time // birthday
+	RegisterDate time.Time // register_date
+	Status       string    // status
+}
+
+// Create inserts the ArtiefactUser to the database.
+func (r *ArtiefactUser) Create(db Queryer) error {
+	err := db.QueryRow(
+		`INSERT INTO artiefact_user (password, email, birthday, register_date, status) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		&r.Password, &r.Email, &r.Birthday, &r.RegisterDate, &r.Status).Scan(&r.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert artiefact_user")
+	}
+	return nil
+}
+
+// GetArtiefactUserByPk select the ArtiefactUser from the database.
+func GetArtiefactUserByPk(db Queryer, pk0 int64) (*ArtiefactUser, error) {
+	var r ArtiefactUser
+	err := db.QueryRow(
+		`SELECT id, password, email, birthday, register_date, status FROM artiefact_user WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.Password, &r.Email, &r.Birthday, &r.RegisterDate, &r.Status)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select artiefact_user")
+	}
+	return &r, nil
+}
+
 // Profile represents public.profile
 type Profile struct {
 	UserID  int64          // user_id
@@ -93,39 +126,6 @@ func GetProfilePictureByPk(db Queryer, pk0 int64) (*ProfilePicture, error) {
 		pk0).Scan(&r.UserID, &r.Thumbnail, &r.Image)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select profile_picture")
-	}
-	return &r, nil
-}
-
-// User represents public.user
-type User struct {
-	ID           int64     // id
-	Password     string    // password
-	Email        string    // email
-	Birthday     time.Time // birthday
-	RegisterDate time.Time // register_date
-	Status       string    // status
-}
-
-// Create inserts the User to the database.
-func (r *User) Create(db Queryer) error {
-	err := db.QueryRow(
-		`INSERT INTO user (password, email, birthday, register_date, status) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-		&r.Password, &r.Email, &r.Birthday, &r.RegisterDate, &r.Status).Scan(&r.ID)
-	if err != nil {
-		return errors.Wrap(err, "failed to insert user")
-	}
-	return nil
-}
-
-// GetUserByPk select the User from the database.
-func GetUserByPk(db Queryer, pk0 int64) (*User, error) {
-	var r User
-	err := db.QueryRow(
-		`SELECT id, password, email, birthday, register_date, status FROM user WHERE id = $1`,
-		pk0).Scan(&r.ID, &r.Password, &r.Email, &r.Birthday, &r.RegisterDate, &r.Status)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to select user")
 	}
 	return &r, nil
 }
