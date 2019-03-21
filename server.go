@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// IapiHandler is a handler
 type IapiHandler struct {
 	handler func(http.ResponseWriter, *http.Request) (int, interface{}, error)
 }
@@ -39,4 +40,9 @@ func Serve(confPath string) {
 	// user
 	userApp := &UserApp{app}
 	router.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
+
+	// Testing
+	router.HandleFunc("/get-user", userApp.GetUserHandler).Methods("GET")
+
+	log.Fatal(http.ListenAndServe(":8000", router))
 }

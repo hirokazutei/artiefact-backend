@@ -1,8 +1,8 @@
-"""Generating schema
+"""generating database schema
 
-Revision ID: bf1191c49ccb
+Revision ID: 00e9f3d6a5e0
 Revises: 
-Create Date: 2019-03-16 18:40:09.271317
+Create Date: 2019-03-21 17:00:33.822034
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bf1191c49ccb'
+revision = '00e9f3d6a5e0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('artiefact_user',
     sa.Column('id', sa.BIGINT(), nullable=False),
     sa.Column('password', sa.TEXT(), nullable=False),
+    sa.Column('salt', sa.TEXT(), nullable=False),
     sa.Column('email', sa.TEXT(), nullable=False),
     sa.Column('birthday', sa.Date(), nullable=False),
     sa.Column('register_date', sa.DateTime(timezone=True), nullable=False),

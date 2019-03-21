@@ -53,6 +53,6 @@ class ProfileFactory(SQLAlchemyModelFactory):
 
 
 def create_user():
-    user = ArtiefactUserFactory.create()
+    user = ArtiefactUserFactory.create(salt='salt')
     UsernameFactory.create(user=user)
     return user
