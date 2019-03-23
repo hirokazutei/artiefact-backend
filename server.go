@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	c "github.com/hirokazu/artiefact-backend/constants"
 )
 
 // IapiHandler is a handler
@@ -17,19 +18,19 @@ func Serve(confPath string) {
 	// get the config
 	appConfig, err := NewAppConfig(confPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf(c.ErrorActionDetail("creating", "app config", err.Error()))
 	}
 
 	// start database
 	database, err := NewDatabase(appConfig)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf(c.ErrorActionDetail("starting", "database", err.Error()))
 	}
 
 	// set up root context
 	app, err := NewApp(appConfig, database)
 	if err != nil {
-		log.Fatalf("failed to create app: %s", err)
+		log.Fatalf(c.ErrorActionDetail("creating", "app", err.Error()))
 	}
 
 	// application routing

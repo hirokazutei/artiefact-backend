@@ -1,5 +1,7 @@
 package c
 
+import "fmt"
+
 // Database Errors
 const (
 	ErrorDBFailedToBegin  = "database has failed to begin"
@@ -11,13 +13,12 @@ const (
 	ErrorAlreadyExists = "the specified %s already exists"
 )
 
-// Actions Errors
-const (
-	ErrorCreating     = "encountered an error while creating %s"
-	ErrorCreatingFrom = "encountered an error while creating %s from %s"
-	ErrorGenerating   = "encountered an error while generating %s"
-	ErrorOpening      = "encountered an error while opening %s"
-	ErrorParsingAs    = "encountered an error while parsing %s as %s"
-	ErrorReading      = "encountered an error while reading %s"
-	ErrorQuerying     = "encountered an error while querying %s"
-)
+// ErrorAction create an error message with a current actio and object
+func ErrorAction(action string, object string) string {
+	return fmt.Sprintf("encountered an error while %s %s", action, object)
+}
+
+// ErrorActionDetail create an error message with a current action, object, and detail
+func ErrorActionDetail(action string, object string, detail string) string {
+	return fmt.Sprintf("encountered an error while %s %s: %s", action, object, detail)
+}

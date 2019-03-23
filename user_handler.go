@@ -55,8 +55,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	emailExists, err := model.CheckIfEmailIsTaken(tx, param.Email)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorQuerying, "email"),
+			Status: http.StatusInternalServerError,
+			Type:   c.ErrorAction("querying", "email"),
 			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -64,7 +64,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if emailExists {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
+			Status: http.StatusBadRequest,
 			Type:   fmt.Sprintf(c.ErrorAlreadyExists, "email"),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -78,8 +78,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	usernameExists, err := model.CheckIfUsernameIsTaken(tx, param.Username)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorQuerying, "email"),
+			Status: http.StatusInternalServerError,
+			Type:   c.ErrorAction("querying", "username"),
 			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -87,8 +87,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if usernameExists {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   "the specified user already exists!",
+			Status: http.StatusBadRequest,
+			Type:   fmt.Sprintf(c.ErrorAlreadyExists, "username"),
 		}
 		json.NewEncoder(w).Encode(e)
 		return
@@ -109,8 +109,9 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	hashByte, err := bcrypt.GenerateFromPassword([]byte(pepperedPassword.String()), bcrypt.DefaultCost)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorGenerating, "password hash"),
+			Status: http.StatusInternalServerError,
+			Type:   c.ErrorAction("generating", "password"),
+			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
 		return
@@ -120,8 +121,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	birthday, err := time.Parse(c.DateFormat, param.Birthday)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorParsingAs, param.Birthday, "birthday"),
+			Status: http.StatusUnprocessableEntity,
+			Type:   c.ErrorActionDetail("parsing", "birthday", param.Birthday),
 			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -134,14 +135,14 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		Email:            param.Email,
 		Birthday:         birthday,
 		RegisterDatetime: time.Now(),
-		Status:           "unverified",
+		Status:           c.UserUnverified,
 	}
 
 	err = newUser.Create(tx)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorCreating, "artiefact_user"),
+			Status: http.StatusInternalServerError,
+			Type:   c.ErrorAction("creating", "artiefact_user"),
 			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -157,8 +158,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = newUsername.Create(tx)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorCreating, "username"),
+			Status: http.StatusInternalServerError,
+			Type:   c.ErrorAction("creating", "username"),
 			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -191,8 +192,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = newToken.Create(tx)
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
-			Type:   fmt.Sprintf(c.ErrorCreating, "token"),
+			Status: http.StatusInternalServerError,
+			Type:   c.ErrorAction("creating", "token"),
 			Detail: err.Error(),
 		}
 		json.NewEncoder(w).Encode(e)
@@ -202,7 +203,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	err = tx.Commit()
 	if err != nil {
 		e := &Error{
-			Status: http.StatusInternalServerError, // Change
+			Status: http.StatusInternalServerError,
 			Type:   c.ErrorDBFailedToCommit,
 			Detail: err.Error(),
 		}

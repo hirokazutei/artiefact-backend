@@ -1,7 +1,6 @@
 package artiefact
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -28,18 +27,18 @@ type AppConfig struct {
 func NewAppConfig(configPath string) (*AppConfig, error) {
 	file, err := os.Open(configPath)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf(c.ErrorOpening, "file"))
+		return nil, errors.Wrap(err, c.ErrorAction("opening", "file"))
 	}
 	defer file.Close()
 
 	buffer, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf(c.ErrorReading, "file"))
+		return nil, errors.Wrap(err, c.ErrorAction("reading", "file"))
 	}
 
 	var config AppConfig
 	if err := toml.Unmarshal(buffer, &config); err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf(c.ErrorCreatingFrom, "AppConfig", "file"))
+		return nil, errors.Wrap(err, c.ErrorAction("creating", "AppConfig from file"))
 	}
 
 	env := os.Getenv("ARTIEFACT_ENV")
