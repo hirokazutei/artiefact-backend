@@ -12,8 +12,13 @@ session = scoped_session(sessionmaker(bind=engine))
 from .account import (
     ArtiefactUser, Username, ProfilePicture, Profile
 )  # NOQA
+from .tokens import (
+    AccessToken, AccessTokenUse
+)  # NOQA
 
 __all__ = [
     # account
-    'ArtiefactUser', 'Username', 'Profile', 'ProfilePicture'
+    'ArtiefactUser', 'Username', 'Profile', 'ProfilePicture',
+    # token
+    'AccessToken', 'AccessTokenUse'
 ]

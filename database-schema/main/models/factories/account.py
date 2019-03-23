@@ -7,13 +7,15 @@ import factory
 from main.models import account, session
 from factory.alchemy import SQLAlchemyModelFactory
 
+DEFAULT_SALT_COST = 16
+
 
 class ArtiefactUserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = account.ArtiefactUser
         sqlalchemy_session = session
 
-    password = bcrypt.hashpw("password1234".encode('utf-8'), bcrypt.gensalt(16)).decode("utf-8")
+    password = bcrypt.hashpw("password1234".encode('utf-8'), bcrypt.gensalt(DEFAULT_SALT_COST)).decode("utf-8")
     email = factory.Faker('email')
     birthday = factory.Faker('date_time_this_decade', before_now=True, after_now=False)
     register_date = factory.Faker('date_time_this_decade', before_now=True, after_now=False)
@@ -53,6 +55,6 @@ class ProfileFactory(SQLAlchemyModelFactory):
 
 
 def create_user():
-    user = ArtiefactUserFactory.create(salt='salt')
+    user = ArtiefactUserFactory.create()
     UsernameFactory.create(user=user)
     return user

@@ -22,14 +22,11 @@ type Error struct {
 		Field      string `json:"field,omitempty"`
 		UserDetail string `json:"user_detail,omitempty"`
 	} `json:"errors,omitempty"`
-	MfaExpiresIn   int64  `json:"mfaExpiresIn,omitempty"`
-	MfaID          string `json:"mfaId,omitempty"`
-	MfaPhoneNumber string `json:"mfaPhoneNumber,omitempty"`
-	Status         int64  `json:"status"`
-	Title          string `json:"title,omitempty"`
-	Type           string `json:"type"`
-	UserDetail     string `json:"user_detail,omitempty"`
-	UserTitle      string `json:"user_title,omitempty"`
+	Status     int64  `json:"status"`
+	Title      string `json:"title,omitempty"`
+	Type       string `json:"type"`
+	UserDetail string `json:"user_detail,omitempty"`
+	UserTitle  string `json:"user_title,omitempty"`
 }
 
 // Validate validates the JSON

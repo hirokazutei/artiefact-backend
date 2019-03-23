@@ -1,8 +1,14 @@
 package schema
 
+// Token struct for token resource
+type Token struct {
+	Status string `json:"status,omitempty"`
+	Token  string `json:"token,omitempty"`
+}
+
 // User struct for user resource
 type User struct {
-	Birthday     string `json:"birthday,omitempty"`
+	Birthday     string `json:"birthday"`
 	Email        string `json:"email"`
 	ID           string `json:"id,omitempty"`
 	Password     string `json:"password"`
@@ -11,16 +17,17 @@ type User struct {
 	Username     string `json:"username"`
 }
 
-// UserGetUserRequest struct for user
-// GET: /get-user
-type UserGetUserRequest struct {
-	Email    string `json:"email" schema:"email"`
-	Password string `json:"password" schema:"password"`
-	Username string `json:"username" schema:"username"`
+// UserSignupRequest struct for user
+// POST: /signup
+type UserSignupRequest struct {
+	Birthday string `json:"birthday"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Username string `json:"username"`
 }
 
-// UserGetUserResponse struct for user
-// GET: /get-user
-type UserGetUserResponse struct {
-	User *User `json:"user,omitempty" schema:"user"`
+// UserSignupResponse struct for user
+// POST: /signup
+type UserSignupResponse struct {
+	Token string `json:"token,omitempty"`
 }

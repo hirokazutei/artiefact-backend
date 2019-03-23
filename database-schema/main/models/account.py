@@ -13,10 +13,9 @@ class ArtiefactUser(Base):
 
     id = Column(BIGINT, primary_key=True)
     password = Column(TEXT, nullable=False)
-    salt = Column(TEXT, nullable=False)
     email = Column(TEXT, nullable=False)
     birthday = Column(Date, nullable=False)
-    register_date = Column(DateTime(timezone=True), nullable=False)
+    register_datetime = Column(DateTime(timezone=True), nullable=False)
     status = Column(TEXT, nullable=False, index=True)
 
 
@@ -28,7 +27,7 @@ class UserAgreement(Base):
     id = Column(BIGINT, primary_key=True)
     user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), nullable=False)
     agreement_type = Column(TEXT, nullable=False)
-    agreement_date = Column(DateTime(timezone=True), nullable=False)
+    agreement_datetime = Column(DateTime(timezone=True), nullable=False)
 
 
 class Username(Base):

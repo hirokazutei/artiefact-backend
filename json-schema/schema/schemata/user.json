@@ -37,7 +37,7 @@
       "description": "the status of the user",
       "example": "active",
       "type": ["string"],
-      "enum": ["active", "deactivated", "deleted", "suspended"]
+      "enum": ["unverified", "active", "deactivated", "deleted", "suspended"]
     },
     "username": {
       "description": "name of the user",
@@ -47,14 +47,17 @@
   },
   "links": [
     {
-      "description": "as a test first",
-      "href": "/get-user",
-      "method": "GET",
-      "rel": "get-user",
+      "description": "signup",
+      "href": "/signup",
+      "method": "POST",
+      "rel": "signup",
       "schema": {
         "properties": {
           "username": {
             "$ref": "/schemata/user#/definitions/username"
+          },
+          "birthday": {
+            "$ref": "/schemata/user#/definitions/birthday"
           },
           "password": {
             "$ref": "/schemata/user#/definitions/password"
@@ -64,15 +67,15 @@
           }
         },
         "type": ["object"],
-        "required": ["username", "email", "password"]
+        "required": ["username", "birthday", "email", "password"]
       },
       "targetSchema": {
         "properties": {
-          "user": {
-            "$ref": "/schemata/user"
+          "token": {
+            "$ref": "/schemata/token#/definitions/token"
           }
         },
-        "required": ["user"],
+        "required": ["token"],
         "type": ["object"]
       },
       "title": "test"
@@ -101,6 +104,6 @@
       "$ref": "/schemata/user#/definitions/password"
     }
   },
-  "required": ["username", "password", "email"],
+  "required": ["username", "birthday", "password", "email"],
   "id": "schemata/user"
 }

@@ -1,7 +1,6 @@
 package artiefact
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -15,18 +14,17 @@ type IapiHandler struct {
 
 // Serve serves the server
 func Serve(confPath string) {
-	fmt.Println(confPath)
+	// get the config
 	appConfig, err := NewAppConfig(confPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%+v\n", appConfig)
 
+	// start database
 	database, err := NewDatabase(appConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%+v\n", database)
 
 	// set up root context
 	app, err := NewApp(appConfig, database)
@@ -37,12 +35,10 @@ func Serve(confPath string) {
 	// application routing
 	router := mux.NewRouter()
 
-	// user
+	// user app
 	userApp := &UserApp{app}
 	router.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
 
-	// Testing
-	router.HandleFunc("/get-user", userApp.GetUserHandler).Methods("GET")
-
+	// listen and serve
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
