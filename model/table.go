@@ -73,6 +73,39 @@ func GetArtiefactUserByPk(db Queryer, pk0 int64) (*ArtiefactUser, error) {
 	return &r, nil
 }
 
+// Chapter represents artiefact.chapter
+type Chapter struct {
+	ID                 int64           // id
+	Saga               int64           // saga
+	StartingLongitudes float64         // starting_longitudes
+	StartingLatitudes  float64         // starting_latitudes
+	EndingLongitudes   sql.NullFloat64 // ending_longitudes
+	EndingLatitudes    sql.NullFloat64 // ending_latitudes
+}
+
+// Create inserts the Chapter to the database.
+func (r *Chapter) Create(db Queryer) error {
+	err := db.QueryRow(
+		`INSERT INTO chapter (saga, starting_longitudes, starting_latitudes, ending_longitudes, ending_latitudes) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		&r.Saga, &r.StartingLongitudes, &r.StartingLatitudes, &r.EndingLongitudes, &r.EndingLatitudes).Scan(&r.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert chapter")
+	}
+	return nil
+}
+
+// GetChapterByPk select the Chapter from the database.
+func GetChapterByPk(db Queryer, pk0 int64) (*Chapter, error) {
+	var r Chapter
+	err := db.QueryRow(
+		`SELECT id, saga, starting_longitudes, starting_latitudes, ending_longitudes, ending_latitudes FROM chapter WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.Saga, &r.StartingLongitudes, &r.StartingLatitudes, &r.EndingLongitudes, &r.EndingLatitudes)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select chapter")
+	}
+	return &r, nil
+}
+
 // Profile represents artiefact.profile
 type Profile struct {
 	UserID  int64          // user_id
@@ -135,6 +168,40 @@ func GetProfilePictureByPk(db Queryer, pk0 int64) (*ProfilePicture, error) {
 	return &r, nil
 }
 
+// Saga represents artiefact.saga
+type Saga struct {
+	ID                 int64           // id
+	BeginDate          time.Time       // begin_date
+	EndDate            *time.Time      // end_date
+	StartingLongitudes float64         // starting_longitudes
+	StartingLatitudes  float64         // starting_latitudes
+	EndingLongitudes   sql.NullFloat64 // ending_longitudes
+	EndingLatitudes    sql.NullFloat64 // ending_latitudes
+}
+
+// Create inserts the Saga to the database.
+func (r *Saga) Create(db Queryer) error {
+	err := db.QueryRow(
+		`INSERT INTO saga (begin_date, end_date, starting_longitudes, starting_latitudes, ending_longitudes, ending_latitudes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+		&r.BeginDate, &r.EndDate, &r.StartingLongitudes, &r.StartingLatitudes, &r.EndingLongitudes, &r.EndingLatitudes).Scan(&r.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert saga")
+	}
+	return nil
+}
+
+// GetSagaByPk select the Saga from the database.
+func GetSagaByPk(db Queryer, pk0 int64) (*Saga, error) {
+	var r Saga
+	err := db.QueryRow(
+		`SELECT id, begin_date, end_date, starting_longitudes, starting_latitudes, ending_longitudes, ending_latitudes FROM saga WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.BeginDate, &r.EndDate, &r.StartingLongitudes, &r.StartingLatitudes, &r.EndingLongitudes, &r.EndingLatitudes)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select saga")
+	}
+	return &r, nil
+}
+
 // TokenAccess represents artiefact.token_access
 type TokenAccess struct {
 	ID               int64     // id
@@ -161,6 +228,37 @@ func GetTokenAccessByPk(db Queryer, pk0 int64) (*TokenAccess, error) {
 		pk0).Scan(&r.ID, &r.Token, &r.LastUsedDatetime)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select token_access")
+	}
+	return &r, nil
+}
+
+// TrackingBatch represents artiefact.tracking_batch
+type TrackingBatch struct {
+	ID         int64       // id
+	Chapter    int64       // chapter
+	Longitudes interface{} // longitudes
+	Latitudes  interface{} // latitudes
+}
+
+// Create inserts the TrackingBatch to the database.
+func (r *TrackingBatch) Create(db Queryer) error {
+	err := db.QueryRow(
+		`INSERT INTO tracking_batch (chapter, longitudes, latitudes) VALUES ($1, $2, $3) RETURNING id`,
+		&r.Chapter, &r.Longitudes, &r.Latitudes).Scan(&r.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert tracking_batch")
+	}
+	return nil
+}
+
+// GetTrackingBatchByPk select the TrackingBatch from the database.
+func GetTrackingBatchByPk(db Queryer, pk0 int64) (*TrackingBatch, error) {
+	var r TrackingBatch
+	err := db.QueryRow(
+		`SELECT id, chapter, longitudes, latitudes FROM tracking_batch WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.Chapter, &r.Longitudes, &r.Latitudes)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select tracking_batch")
 	}
 	return &r, nil
 }

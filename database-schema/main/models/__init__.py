@@ -15,10 +15,20 @@ from .account import (
 from .tokens import (
     AccessToken, AccessTokenUse
 )  # NOQA
+from .location import (
+    TrackingBatch
+)  # NOQA
+from .saga import (
+    Saga, Chapter
+)  # NOQA
 
 __all__ = [
     # account
     'ArtiefactUser', 'Username', 'Profile', 'ProfilePicture',
     # token
     'AccessToken', 'AccessTokenUse'
+    # location
+    'TrackingBatch',
+    # saga
+    'Saga', 'Chapter'
 ]
