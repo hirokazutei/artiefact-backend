@@ -40,6 +40,13 @@ func Serve(confPath string) {
 	userApp := &UserApp{app}
 	router.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
 
+	// saga app
+	sagaApp := &SagaApp{app}
+	router.HandleFunc("/saga/begin", sagaApp.BeginSagaHandler).Methods("POST")
+	router.HandleFunc("/chapter/begin", sagaApp.BeginChapterHandler).Methods("POST")
+	router.HandleFunc("/chapter/end", sagaApp.EndChapterHandler).Methods("POST")
+	router.HandleFunc("/tracking/update/batch", sagaApp.TrackingBatchHandler).Methods("POST")
+
 	// listen and serve
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
