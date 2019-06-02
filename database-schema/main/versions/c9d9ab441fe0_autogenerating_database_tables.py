@@ -1,8 +1,8 @@
-"""autogenerating database schema
+"""Autogenerating database tables
 
-Revision ID: f9c8e15907ea
+Revision ID: c9d9ab441fe0
 Revises: 
-Create Date: 2019-03-23 19:02:43.387252
+Create Date: 2019-06-02 18:05:23.631823
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f9c8e15907ea'
+revision = 'c9d9ab441fe0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,8 +25,10 @@ def upgrade():
     sa.Column('expiry_datetime', sa.DateTime(timezone=True), nullable=False),
     sa.Column('obtained_by', sa.TEXT(), nullable=False),
     sa.Column('token_type', sa.TEXT(), nullable=False),
+    sa.Column('expired', sa.BOOLEAN(), nullable=False),
     sa.PrimaryKeyConstraint('token')
     )
+    op.create_index(op.f('ix_access_token_token'), 'access_token', ['token'], unique=False)
     op.create_index(op.f('ix_access_token_user_id'), 'access_token', ['user_id'], unique=False)
     op.create_table('artiefact_user',
     sa.Column('id', sa.BIGINT(), nullable=False),
@@ -91,5 +93,6 @@ def downgrade():
     op.drop_index(op.f('ix_artiefact_user_status'), table_name='artiefact_user')
     op.drop_table('artiefact_user')
     op.drop_index(op.f('ix_access_token_user_id'), table_name='access_token')
+    op.drop_index(op.f('ix_access_token_token'), table_name='access_token')
     op.drop_table('access_token')
     # ### end Alembic commands ###

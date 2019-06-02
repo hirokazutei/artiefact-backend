@@ -2,6 +2,7 @@ package schema
 
 import "github.com/lestrrat-go/jsval"
 
+var UserSigninValidator *jsval.JSVal
 var UserSignupValidator *jsval.JSVal
 var M *jsval.ConstraintMap
 var R0 jsval.Constraint
@@ -19,6 +20,25 @@ func init() {
 	M.SetReference("#/definitions/user/definitions/email", R1)
 	M.SetReference("#/definitions/user/definitions/password", R2)
 	M.SetReference("#/definitions/user/definitions/username", R3)
+	UserSigninValidator = jsval.New().
+		SetName("UserSigninValidator").
+		SetConstraintMap(M).
+		SetRoot(
+			jsval.Object().
+				Required("password", "username").
+				AdditionalProperties(
+					jsval.EmptyConstraint,
+				).
+				AddProp(
+					"password",
+					jsval.Reference(M).RefersTo("#/definitions/user/definitions/password"),
+				).
+				AddProp(
+					"username",
+					jsval.Reference(M).RefersTo("#/definitions/user/definitions/username"),
+				),
+		)
+
 	UserSignupValidator = jsval.New().
 		SetName("UserSignupValidator").
 		SetConstraintMap(M).

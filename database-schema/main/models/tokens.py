@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import Column, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import TEXT, BIGINT
+from sqlalchemy.dialects.postgresql import TEXT, BIGINT, BOOLEAN
 
 from . import Base
 
@@ -10,12 +10,13 @@ class AccessToken(Base):
 
     __tablename__ = 'access_token'
 
-    token = Column(TEXT, primary_key=True)
+    token = Column(TEXT, primary_key=True, index=True)
     user_id = Column(BIGINT, nullable=False, index=True)
     generated_datetime = Column(DateTime(timezone=True), nullable=False)
     expiry_datetime = Column(DateTime(timezone=True), nullable=False)
     obtained_by = Column(TEXT, nullable=False)
     token_type = Column(TEXT, nullable=False)
+    expired = Column(BOOLEAN, nullable=False)
 
 
 class AccessTokenUse(Base):

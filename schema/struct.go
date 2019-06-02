@@ -17,6 +17,19 @@ type User struct {
 	Username     string `json:"username"`
 }
 
+// UserSigninRequest struct for user
+// POST: /signin
+type UserSigninRequest struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
+// UserSigninResponse struct for user
+// POST: /signin
+type UserSigninResponse struct {
+	Token string `json:"token,omitempty"`
+}
+
 // UserSignupRequest struct for user
 // POST: /signup
 type UserSignupRequest struct {

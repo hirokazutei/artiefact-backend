@@ -118,6 +118,34 @@
             "type": ["object"]
           },
           "title": "test"
+        },
+        {
+          "description": "signin",
+          "href": "/signin",
+          "method": "POST",
+          "rel": "signin",
+          "schema": {
+            "properties": {
+              "username": {
+                "$ref": "#/definitions/user/definitions/username"
+              },
+              "password": {
+                "$ref": "#/definitions/user/definitions/password"
+              }
+            },
+            "type": ["object"],
+            "required": ["username", "password"]
+          },
+          "targetSchema": {
+            "properties": {
+              "token": {
+                "$ref": "#/definitions/token/definitions/token"
+              }
+            },
+            "required": ["token"],
+            "type": ["object"]
+          },
+          "title": "test"
         }
       ],
       "properties": {

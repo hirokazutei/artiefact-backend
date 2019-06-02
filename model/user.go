@@ -7,17 +7,57 @@ import (
 	"github.com/pkg/errors"
 )
 
-// CheckIfUsernameIsTaken determines if the Usermane is already taken
-func CheckIfUsernameIsTaken(db Queryer, username string) (bool, error) {
+// IfUsernameExist determines if the Usermane is already taken
+func IfUsernameExist(db Queryer, username string) (bool, error) {
 	var foundUsername string
 	err := db.QueryRow(
-		`SELECT username_lower FROM username WHERE username_lower = $1`,
+		`SELECT
+			username_lower
+		FROM
+			username
+		WHERE
+			username_lower = $1`,
 		strings.ToLower(username)).Scan(&foundUsername)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil
 		}
-		return false, errors.Wrap(err, "CheckIfUsernameIsTaken failed")
+		return false, errors.Wrap(err, "IfUsernameExist failed")
 	}
 	return true, nil
+}
+
+// GetArtiefactUserByUsername obtains ArtiefactUser by Username
+func GetArtiefactUserByUsername(db Queryer, username string) (*ArtiefactUser, error) {
+	var au ArtiefactUser
+	err := db.QueryRow(
+		`SELECT
+			id,
+			password,
+			email,
+			birthday
+			register_datetime
+			status
+		FROM
+			artiefact_user au
+		JOIN
+			username u
+		ON
+			u.user_id = au.id
+		WHERE
+			username_lower = $1`,
+		strings.ToLower(username)).Scan(
+		&au.ID,
+		&au.Password,
+		&au.Email,
+		&au.Birthday,
+		&au.RegisterDatetime,
+		&au.Status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, errors.Wrap(err, "IfUsernameExist failed")
+	}
+	return &au, nil
 }

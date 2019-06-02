@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// AccessToken represents artiefact.access_token
+// AccessToken represents public.access_token
 type AccessToken struct {
 	Token             string    // token
 	UserID            int64     // user_id
@@ -15,13 +15,14 @@ type AccessToken struct {
 	ExpiryDatetime    time.Time // expiry_datetime
 	ObtainedBy        string    // obtained_by
 	TokenType         string    // token_type
+	Expired           bool      // expired
 }
 
 // Create inserts the AccessToken to the database.
 func (r *AccessToken) Create(db Queryer) error {
 	_, err := db.Exec(
-		`INSERT INTO access_token (token, user_id, generated_datetime, expiry_datetime, obtained_by, token_type) VALUES ($1, $2, $3, $4, $5, $6)`,
-		&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.TokenType)
+		`INSERT INTO access_token (token, user_id, generated_datetime, expiry_datetime, obtained_by, token_type, expired) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.TokenType, &r.Expired)
 	if err != nil {
 		return errors.Wrap(err, "failed to insert access_token")
 	}
@@ -32,15 +33,15 @@ func (r *AccessToken) Create(db Queryer) error {
 func GetAccessTokenByPk(db Queryer, pk0 string) (*AccessToken, error) {
 	var r AccessToken
 	err := db.QueryRow(
-		`SELECT token, user_id, generated_datetime, expiry_datetime, obtained_by, token_type FROM access_token WHERE token = $1`,
-		pk0).Scan(&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.TokenType)
+		`SELECT token, user_id, generated_datetime, expiry_datetime, obtained_by, token_type, expired FROM access_token WHERE token = $1`,
+		pk0).Scan(&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.TokenType, &r.Expired)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select access_token")
 	}
 	return &r, nil
 }
 
-// ArtiefactUser represents artiefact.artiefact_user
+// ArtiefactUser represents public.artiefact_user
 type ArtiefactUser struct {
 	ID               int64     // id
 	Password         string    // password
@@ -73,7 +74,7 @@ func GetArtiefactUserByPk(db Queryer, pk0 int64) (*ArtiefactUser, error) {
 	return &r, nil
 }
 
-// Profile represents artiefact.profile
+// Profile represents public.profile
 type Profile struct {
 	UserID  int64          // user_id
 	Name    sql.NullString // name
@@ -105,7 +106,7 @@ func GetProfileByPk(db Queryer, pk0 int64) (*Profile, error) {
 	return &r, nil
 }
 
-// ProfilePicture represents artiefact.profile_picture
+// ProfilePicture represents public.profile_picture
 type ProfilePicture struct {
 	UserID    int64          // user_id
 	Thumbnail sql.NullString // thumbnail
@@ -135,7 +136,7 @@ func GetProfilePictureByPk(db Queryer, pk0 int64) (*ProfilePicture, error) {
 	return &r, nil
 }
 
-// TokenAccess represents artiefact.token_access
+// TokenAccess represents public.token_access
 type TokenAccess struct {
 	ID               int64     // id
 	Token            string    // token
@@ -165,7 +166,7 @@ func GetTokenAccessByPk(db Queryer, pk0 int64) (*TokenAccess, error) {
 	return &r, nil
 }
 
-// UserAgreement represents artiefact.user_agreement
+// UserAgreement represents public.user_agreement
 type UserAgreement struct {
 	ID                int64     // id
 	UserID            int64     // user_id
@@ -196,7 +197,7 @@ func GetUserAgreementByPk(db Queryer, pk0 int64) (*UserAgreement, error) {
 	return &r, nil
 }
 
-// Username represents artiefact.username
+// Username represents public.username
 type Username struct {
 	UserID        int64  // user_id
 	UsernameLower string // username_lower
