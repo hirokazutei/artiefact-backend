@@ -255,7 +255,7 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e := &Error{
 			Status: http.StatusInternalServerError,
-			Type: c.ErrorFunctionFailure("AuthenticatePassword")
+			Type:   c.ErrorFunctionFailure("AuthenticatePassword"),
 		}
 		json.NewEncoder(w).Encode(e)
 		return
@@ -263,25 +263,7 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if !match {
 		e := &Error{
 			Status: http.StatusBadRequest,
-			Type: c.ErrorWrongPassword,
-		}
-		json.NewEncoder(w).Encode(e)
-		return	
-	}
-
-
-	// Pepper Password
-	var pepperedPassword bytes.Buffer
-	pepperedPassword.WriteString(param.Password)
-	pepperedPassword.WriteString(app.Config.PasswordPepper)
-
-	// Generate Salt & Hash
-	hashByte, err := bcrypt.GenerateFromPassword([]byte(pepperedPassword.String()), bcrypt.DefaultCost)
-	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("generating", "password"),
-			Detail: err.Error(),
+			Type:   c.ErrorWrongPassword,
 		}
 		json.NewEncoder(w).Encode(e)
 		return

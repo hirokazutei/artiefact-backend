@@ -33,6 +33,10 @@ func AuthenticatePassword(rawPassword, hashedPassword, pepper string) (bool, err
 	return false, nil
 }
 
+
+//
+
+
 // ValidateTokens
 
 // If there are multiple tokens, regenerate a token

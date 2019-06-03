@@ -15,7 +15,6 @@ class AccessToken(Base):
     generated_datetime = Column(DateTime(timezone=True), nullable=False)
     expiry_datetime = Column(DateTime(timezone=True), nullable=False)
     obtained_by = Column(TEXT, nullable=False)
-    token_type = Column(TEXT, nullable=False)
     expired = Column(BOOLEAN, nullable=False)
 
 
