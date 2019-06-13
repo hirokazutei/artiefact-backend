@@ -1,7 +1,10 @@
 package artiefact
 
 import (
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -51,4 +54,18 @@ func NewAppConfig(configPath string) (*AppConfig, error) {
 	}
 
 	return &config, nil
+}
+
+func (app *App) sendUnknownErrorResponse(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusInternalServerError)
+	e := c.ErrorUnknown
+	json.NewEncoder(w).Encode(e)
+}
+
+func (app *App) sendResponse(w http.ResponseWriter, status int, res interface{}) {
+	w.WriteHeader(status)
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		fmt.Println(err.Error())
+		app.sendUnknownErrorResponse(w)
+	}
 }

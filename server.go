@@ -38,7 +38,11 @@ func Serve(confPath string) {
 
 	// user app
 	userApp := &UserApp{app}
-	router.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
+	userRouter := router.PathPrefix("/user").Subrouter()
+
+	// signup
+	userRouter.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
+	userRouter.HandleFunc("/signin", userApp.SignInHandler).Methods("POST")
 
 	// listen and serve
 	log.Fatal(http.ListenAndServe(":8000", router))

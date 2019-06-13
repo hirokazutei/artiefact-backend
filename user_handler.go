@@ -1,7 +1,6 @@
 package artiefact
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,19 +12,11 @@ import (
 	"github.com/hirokazu/artiefact-backend/model"
 	"github.com/hirokazu/artiefact-backend/schema"
 	"github.com/hirokazu/artiefact-backend/service"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // UserApp is app for User resource
 type UserApp struct {
 	*App
-}
-
-// Error struct for error resource
-type Error struct {
-	Detail string `json:"detail,omitempty"`
-	Status int    `json:"status"`
-	Type   string `json:"type"`
 }
 
 // SignUpHandler create user and return token
@@ -43,11 +34,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Begin Database
 	tx, err := app.DB.Begin()
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorDBFailedToBegin,
-			Detail: err.Error(),
-		}
+		e := c.ErrorDatabaseBeginFailure()
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -56,19 +43,15 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if Email is taken
 	emailExists, err := model.IfEmailExist(tx, param.Email)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("querying", "email"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("querying", "email"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if emailExists {
-		e := &Error{
-			Status: http.StatusBadRequest,
-			Type:   fmt.Sprintf(c.ErrorAlreadyExists, "email"),
-		}
+		e := c.ErrorAlreadyExists()
+		e.AddDetail(c.ErrorMessageAlreadyExists("email"))
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -79,19 +62,15 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if Username is taken
 	usernameExists, err := model.IfUsernameExist(tx, param.Username)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("querying", "username"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("querying", "username"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if usernameExists {
-		e := &Error{
-			Status: http.StatusBadRequest,
-			Type:   fmt.Sprintf(c.ErrorAlreadyExists, "username"),
-		}
+		e := c.ErrorAlreadyExists()
+		e.AddDetail(c.ErrorMessageAlreadyExists("username"))
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -105,11 +84,9 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Pepper Password
 	hashedPassword, err := service.PepperAndSaltPassward(param.Password, app.Config.PasswordPepper)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("generating", "password"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("generating", "password"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -117,11 +94,9 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert Birthday
 	birthday, err := time.Parse(c.DateFormat, param.Birthday)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusUnprocessableEntity,
-			Type:   c.ErrorActionDetail("parsing", "birthday", param.Birthday),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("parsing", "birthday"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -137,11 +112,9 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = newUser.Create(tx)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("creating", "artiefact_user"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("creating", "artiefact_user"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -154,11 +127,9 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = newUsername.Create(tx)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("creating", "username"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("creating", "username"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -188,22 +159,17 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = newToken.Create(tx)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("creating", "token"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("creating", "token"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorDBFailedToCommit,
-			Detail: err.Error(),
-		}
+		e := c.ErrorDatabaseCommitFailure()
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -230,11 +196,8 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	// Begin Database
 	tx, err := app.DB.Begin()
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorDBFailedToBegin,
-			Detail: err.Error(),
-		}
+		e := c.ErrorDatabaseBeginFailure()
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
@@ -242,41 +205,38 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	au, err := model.GetArtiefactUserByUsername(tx, param.Username)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusBadRequest,
-			Type:   c.ErrorUserNotFound,
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("querying", "artiefact_user"))
+		fmt.Println(err.Error())
+		json.NewEncoder(w).Encode(e)
+		return
+	}
+	if au == nil {
+		e := c.ErrorObjectNotFound("artiefact_user")
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	match, err := service.AuthenticatePassword(param.Password, au.Password, app.Config.PasswordPepper)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorFunctionFailure("AuthenticatePassword"),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("authenticating", "password"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 	if !match {
-		e := &Error{
-			Status: http.StatusBadRequest,
-			Type:   c.ErrorWrongPassword,
-		}
+		e := c.ErrorAuthenticationFailure()
 		json.NewEncoder(w).Encode(e)
 		return
 	}
-
-	// See if there are valid tokens
 
 	// Generate Token
 	tokenGeneratedDatetime := time.Now()
 	tokenExpiryDatetime := tokenGeneratedDatetime.AddDate(1, 0, 0)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id":         newUser.ID,
+		"user_id":         au.ID,
 		"expiry_datetime": tokenExpiryDatetime,
 		"obtained_by":     c.TokenObtainedBySignup,
 		"tokenType":       c.TokenTypeLogin,
@@ -287,7 +247,7 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	newToken := model.AccessToken{
 		Token:             tokenString,
-		UserID:            newUser.ID,
+		UserID:            au.ID,
 		GeneratedDatetime: tokenGeneratedDatetime,
 		ExpiryDatetime:    tokenExpiryDatetime,
 		ObtainedBy:        c.TokenObtainedBySignup,
@@ -296,22 +256,17 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = newToken.Create(tx)
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorAction("creating", "token"),
-			Detail: err.Error(),
-		}
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("creating", "token"))
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		e := &Error{
-			Status: http.StatusInternalServerError,
-			Type:   c.ErrorDBFailedToCommit,
-			Detail: err.Error(),
-		}
+		e := c.ErrorDatabaseCommitFailure()
+		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
 		return
 	}
