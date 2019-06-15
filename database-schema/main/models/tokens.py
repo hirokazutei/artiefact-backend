@@ -15,7 +15,7 @@ class AccessToken(Base):
     generated_datetime = Column(DateTime(timezone=True), nullable=False)
     expiry_datetime = Column(DateTime(timezone=True), nullable=False)
     obtained_by = Column(TEXT, nullable=False)
-    expired = Column(BOOLEAN, nullable=False)
+    active = Column(BOOLEAN, nullable=False)
 
 
 class AccessTokenUse(Base):
@@ -28,4 +28,3 @@ class AccessTokenUse(Base):
     id = Column(BIGINT, primary_key=True)
     token = Column(TEXT, ForeignKey('access_token.token'), nullable=False)
     last_used_datetime = Column(DateTime(timezone=True), nullable=False)
-    # last_used_location

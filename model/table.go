@@ -14,15 +14,14 @@ type AccessToken struct {
 	GeneratedDatetime time.Time // generated_datetime
 	ExpiryDatetime    time.Time // expiry_datetime
 	ObtainedBy        string    // obtained_by
-	TokenType         string    // token_type
-	Expired           bool      // expired
+	Active            bool      // active
 }
 
 // Create inserts the AccessToken to the database.
 func (r *AccessToken) Create(db Queryer) error {
 	_, err := db.Exec(
-		`INSERT INTO access_token (token, user_id, generated_datetime, expiry_datetime, obtained_by, token_type, expired) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.TokenType, &r.Expired)
+		`INSERT INTO access_token (token, user_id, generated_datetime, expiry_datetime, obtained_by, active) VALUES ($1, $2, $3, $4, $5, $6)`,
+		&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.Active)
 	if err != nil {
 		return errors.Wrap(err, "failed to insert access_token")
 	}
@@ -33,8 +32,8 @@ func (r *AccessToken) Create(db Queryer) error {
 func GetAccessTokenByPk(db Queryer, pk0 string) (*AccessToken, error) {
 	var r AccessToken
 	err := db.QueryRow(
-		`SELECT token, user_id, generated_datetime, expiry_datetime, obtained_by, token_type, expired FROM access_token WHERE token = $1`,
-		pk0).Scan(&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.TokenType, &r.Expired)
+		`SELECT token, user_id, generated_datetime, expiry_datetime, obtained_by, active FROM access_token WHERE token = $1`,
+		pk0).Scan(&r.Token, &r.UserID, &r.GeneratedDatetime, &r.ExpiryDatetime, &r.ObtainedBy, &r.Active)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select access_token")
 	}
@@ -45,7 +44,6 @@ func GetAccessTokenByPk(db Queryer, pk0 string) (*AccessToken, error) {
 type ArtiefactUser struct {
 	ID               int64     // id
 	Password         string    // password
-	Email            string    // email
 	Birthday         time.Time // birthday
 	RegisterDatetime time.Time // register_datetime
 	Status           string    // status
@@ -54,8 +52,8 @@ type ArtiefactUser struct {
 // Create inserts the ArtiefactUser to the database.
 func (r *ArtiefactUser) Create(db Queryer) error {
 	err := db.QueryRow(
-		`INSERT INTO artiefact_user (password, email, birthday, register_datetime, status) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-		&r.Password, &r.Email, &r.Birthday, &r.RegisterDatetime, &r.Status).Scan(&r.ID)
+		`INSERT INTO artiefact_user (password, birthday, register_datetime, status) VALUES ($1, $2, $3, $4) RETURNING id`,
+		&r.Password, &r.Birthday, &r.RegisterDatetime, &r.Status).Scan(&r.ID)
 	if err != nil {
 		return errors.Wrap(err, "failed to insert artiefact_user")
 	}
@@ -66,10 +64,70 @@ func (r *ArtiefactUser) Create(db Queryer) error {
 func GetArtiefactUserByPk(db Queryer, pk0 int64) (*ArtiefactUser, error) {
 	var r ArtiefactUser
 	err := db.QueryRow(
-		`SELECT id, password, email, birthday, register_datetime, status FROM artiefact_user WHERE id = $1`,
-		pk0).Scan(&r.ID, &r.Password, &r.Email, &r.Birthday, &r.RegisterDatetime, &r.Status)
+		`SELECT id, password, birthday, register_datetime, status FROM artiefact_user WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.Password, &r.Birthday, &r.RegisterDatetime, &r.Status)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select artiefact_user")
+	}
+	return &r, nil
+}
+
+// EmailVerification represents public.email_verification
+type EmailVerification struct {
+	RequestID            int64     // request_id
+	VerificationDatetime time.Time // verification_datetime
+}
+
+// Create inserts the EmailVerification to the database.
+func (r *EmailVerification) Create(db Queryer) error {
+	_, err := db.Exec(
+		`INSERT INTO email_verification (request_id, verification_datetime) VALUES ($1, $2)`,
+		&r.RequestID, &r.VerificationDatetime)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert email_verification")
+	}
+	return nil
+}
+
+// GetEmailVerificationByPk select the EmailVerification from the database.
+func GetEmailVerificationByPk(db Queryer, pk0 int64) (*EmailVerification, error) {
+	var r EmailVerification
+	err := db.QueryRow(
+		`SELECT request_id, verification_datetime FROM email_verification WHERE request_id = $1`,
+		pk0).Scan(&r.RequestID, &r.VerificationDatetime)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select email_verification")
+	}
+	return &r, nil
+}
+
+// EmailVerificationRequest represents public.email_verification_request
+type EmailVerificationRequest struct {
+	RegisteredEmailID  int64     // registered_email_id
+	Code               string    // code
+	ExpirationDatetime time.Time // expiration_datetime
+	RequestedDatetime  time.Time // requested_datetime
+}
+
+// Create inserts the EmailVerificationRequest to the database.
+func (r *EmailVerificationRequest) Create(db Queryer) error {
+	_, err := db.Exec(
+		`INSERT INTO email_verification_request (registered_email_id, code, expiration_datetime, requested_datetime) VALUES ($1, $2, $3, $4)`,
+		&r.RegisteredEmailID, &r.Code, &r.ExpirationDatetime, &r.RequestedDatetime)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert email_verification_request")
+	}
+	return nil
+}
+
+// GetEmailVerificationRequestByPk select the EmailVerificationRequest from the database.
+func GetEmailVerificationRequestByPk(db Queryer, pk0 int64) (*EmailVerificationRequest, error) {
+	var r EmailVerificationRequest
+	err := db.QueryRow(
+		`SELECT registered_email_id, code, expiration_datetime, requested_datetime FROM email_verification_request WHERE registered_email_id = $1`,
+		pk0).Scan(&r.RegisteredEmailID, &r.Code, &r.ExpirationDatetime, &r.RequestedDatetime)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select email_verification_request")
 	}
 	return &r, nil
 }
@@ -132,6 +190,39 @@ func GetProfilePictureByPk(db Queryer, pk0 int64) (*ProfilePicture, error) {
 		pk0).Scan(&r.UserID, &r.Thumbnail, &r.Image)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select profile_picture")
+	}
+	return &r, nil
+}
+
+// RegisteredEmail represents public.registered_email
+type RegisteredEmail struct {
+	ID               int64     // id
+	UserID           int64     // user_id
+	Email            string    // email
+	EmailLower       string    // email_lower
+	LastUsedDatetime time.Time // last_used_datetime
+	Status           string    // status
+}
+
+// Create inserts the RegisteredEmail to the database.
+func (r *RegisteredEmail) Create(db Queryer) error {
+	err := db.QueryRow(
+		`INSERT INTO registered_email (user_id, email, email_lower, last_used_datetime, status) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		&r.UserID, &r.Email, &r.EmailLower, &r.LastUsedDatetime, &r.Status).Scan(&r.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert registered_email")
+	}
+	return nil
+}
+
+// GetRegisteredEmailByPk select the RegisteredEmail from the database.
+func GetRegisteredEmailByPk(db Queryer, pk0 int64) (*RegisteredEmail, error) {
+	var r RegisteredEmail
+	err := db.QueryRow(
+		`SELECT id, user_id, email, email_lower, last_used_datetime, status FROM registered_email WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.UserID, &r.Email, &r.EmailLower, &r.LastUsedDatetime, &r.Status)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select registered_email")
 	}
 	return &r, nil
 }

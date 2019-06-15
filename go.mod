@@ -9,10 +9,12 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gorilla/mux v1.7.2
 	github.com/jackc/pgx v3.4.0+incompatible
+	github.com/justinas/alice v0.0.0-20160512134231-052b8b6c18ed
 	github.com/kanmu/vandle-api-server v0.0.0-20190612072657-0040866def21
 	github.com/lestrrat-go/jsval v0.0.0-20181205002323-20277e9befc0
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/pkg/errors v0.8.1
+	github.com/rs/xlog v0.0.0-20170520094607-6d906165439a
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 )

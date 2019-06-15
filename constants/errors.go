@@ -1,6 +1,7 @@
 package c
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -76,6 +77,17 @@ func (err Error) GetType() string {
 // GetDetail obtains error status
 func (err Error) GetDetail() string {
 	return err.Detail
+}
+
+// GetError returns the error detail
+func (err Error) GetError() error {
+	errorDetail := err.Detail
+	return errors.New(errorDetail)
+}
+
+// GenerateResponse returns the necessary parameters for handler functions
+func (err Error) GenerateResponse() (int, interface{}, error) {
+	return err.GetStatus(), err, err.GetError()
 }
 
 // ErrorInvalidHeader returns Invalid Header Error

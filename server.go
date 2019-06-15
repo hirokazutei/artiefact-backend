@@ -6,12 +6,19 @@ import (
 
 	"github.com/gorilla/mux"
 	c "github.com/hirokazu/artiefact-backend/constants"
+	"github.com/justinas/alice"
 )
 
-// IapiHandler is a handler
-type IapiHandler struct {
+// ServiceHandler handler struct
+type ServiceHandler struct {
 	handler func(http.ResponseWriter, *http.Request) (int, interface{}, error)
 }
+
+type contextKeyType int
+
+const (
+	contextKeyAuth contextKeyType = iota
+)
 
 // Serve serves the server
 func Serve(confPath string) {
@@ -33,6 +40,14 @@ func Serve(confPath string) {
 		log.Fatalf(c.ErrorActionDetail("creating", "app", err.Error()))
 	}
 
+	var serverChain alice.Chain
+
+	middlewareChain := serverChain.Append(
+		setJSONHeaderMiddleware,
+		tokenAuthMiddleware(app),
+		recoverMiddleware,
+	)
+
 	// application routing
 	router := mux.NewRouter()
 
@@ -41,8 +56,10 @@ func Serve(confPath string) {
 	userRouter := router.PathPrefix("/user").Subrouter()
 
 	// signup
-	userRouter.HandleFunc("/signup", userApp.SignUpHandler).Methods("POST")
-	userRouter.HandleFunc("/signin", userApp.SignInHandler).Methods("POST")
+	userRouter.Methods("POST").Path("/signIn").Handler(
+		middlewareChain.Then(UserHandler{handler: userApp.SignInHandler}))
+	userRouter.Methods("POST").Path("/signUp").Handler(
+		middlewareChain.Then(UserHandler{handler: userApp.SignUpHandler}))
 
 	// listen and serve
 	log.Fatal(http.ListenAndServe(":8000", router))

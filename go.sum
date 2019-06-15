@@ -61,6 +61,7 @@ github.com/jackc/pgx v3.4.0+incompatible/go.mod h1:0ZGrqGqkRlliWnWB4zKnWtjbSWbGk
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5imkbgOkpRUYLnmbU7UEFbjtDA2hxJ1ichM=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
+github.com/justinas/alice v0.0.0-20160512134231-052b8b6c18ed h1:Ab4XhecWusSSeIfQ2eySh7kffQ1Wsv6fNSkwefr6AVQ=
 github.com/justinas/alice v0.0.0-20160512134231-052b8b6c18ed/go.mod h1:oLH0CmIaxCGXD67VKGR5AacGXZSMznlmeqM8RzPrcY8=
 github.com/kanmu/vandle-api-server v0.0.0-20190612072657-0040866def21 h1:OJdJCIoomVIxukqBF+DioGiiRYIKHgWF1koYeGaLBBg=
 github.com/kanmu/vandle-api-server v0.0.0-20190612072657-0040866def21/go.mod h1:gc4mMxrp2U9Qaz3oq6nTA+LA/GK+LYY53+p6QY/uUks=

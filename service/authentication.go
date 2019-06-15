@@ -32,14 +32,3 @@ func AuthenticatePassword(rawPassword, hashedPassword, pepper string) (bool, err
 	}
 	return false, nil
 }
-
-
-//
-
-
-// ValidateTokens
-
-// If there are multiple tokens, regenerate a token
-// If there are no tokens, generate a new token
-// If there is a token that is expired, set to expire and generate a new token
-// If there is an existing token, return that token and update expiry date

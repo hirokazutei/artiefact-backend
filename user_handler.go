@@ -19,16 +19,41 @@ type UserApp struct {
 	*App
 }
 
+// UserHandler user handler
+type UserHandler struct {
+	handler func(http.ResponseWriter, *http.Request) (int, interface{}, error)
+}
+
+// ServeHTTPC for user
+func (h UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	encoder := json.NewEncoder(w)
+	status, res, err := h.handler(w, r)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	w.WriteHeader(status)
+	if err := encoder.Encode(res); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		encoder.Encode(c.ErrorUnknown)
+		return
+	}
+	return
+}
+
 // SignUpHandler create user and return token
-func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
+func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	var param schema.UserSignupRequest
 
 	// Validate the JSON coming in with the appropriate JSON-Schema Validator
 	res, err := schema.Validate(&param, schema.UserSignupValidator, r)
-	fmt.Println(res)
+	fmt.Println(res) // kaz
 	if err != nil {
-		json.NewEncoder(w).Encode(res)
-		return
+		// json.NewEncoder(w).Encode(res)
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("validating", "request"))
+		fmt.Println(err.Error()) // kaz
+		return e.GenerateResponse()
 	}
 
 	// Begin Database
@@ -36,7 +61,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e := c.ErrorDatabaseBeginFailure()
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 	defer tx.Rollback()
 
@@ -47,13 +72,12 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("querying", "email"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 	if emailExists {
-		e := c.ErrorAlreadyExists()
-		e.AddDetail(c.ErrorMessageAlreadyExists("email"))
+		e := c.ErrorAlreadyExists("email")
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// TODO: Email Verification
@@ -66,13 +90,12 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("querying", "username"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 	if usernameExists {
-		e := c.ErrorAlreadyExists()
-		e.AddDetail(c.ErrorMessageAlreadyExists("username"))
+		e := c.ErrorAlreadyExists("username")
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	/*
@@ -88,7 +111,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("generating", "password"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Convert Birthday
@@ -98,7 +121,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("parsing", "birthday"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Create the user
@@ -116,7 +139,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("creating", "artiefact_user"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Create Other User Profile Too
@@ -131,7 +154,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("creating", "username"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Generate Token
@@ -163,7 +186,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e.AddDetail(c.ErrorAction("creating", "token"))
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	err = tx.Commit()
@@ -171,7 +194,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		e := c.ErrorDatabaseCommitFailure()
 		fmt.Println(err.Error())
 		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Create Response
@@ -179,18 +202,23 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		Token: tokenString,
 	}
 
-	json.NewEncoder(w).Encode(response)
+	// json.NewEncoder(w).Encode(response)
+	return http.StatusOK, response, nil
 }
 
 // SignInHandler log-in user and create
-func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
+func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	var param schema.UserSignupRequest
 
 	// Validate the JSON coming in with the appropriate JSON-Schema Validator
 	res, err := schema.Validate(&param, schema.UserSigninValidator, r)
+	fmt.Println(res)
+
 	if err != nil {
-		json.NewEncoder(w).Encode(res)
-		return
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("generating", "password"))
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
 	}
 
 	// Begin Database
@@ -198,8 +226,7 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e := c.ErrorDatabaseBeginFailure()
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 	defer tx.Rollback()
 
@@ -208,13 +235,11 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "artiefact_user"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 	if au == nil {
 		e := c.ErrorObjectNotFound("artiefact_user")
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	match, err := service.AuthenticatePassword(param.Password, au.Password, app.Config.PasswordPepper)
@@ -222,13 +247,11 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("authenticating", "password"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 	if !match {
 		e := c.ErrorAuthenticationFailure()
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Generate Token
@@ -259,16 +282,14 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("creating", "token"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		e := c.ErrorDatabaseCommitFailure()
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
-		return
+		return e.GenerateResponse()
 	}
 
 	// Create Response
@@ -276,5 +297,6 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) {
 		Token: tokenString,
 	}
 
-	json.NewEncoder(w).Encode(response)
+	// json.NewEncoder(w).Encode(response)
+	return http.StatusOK, response, nil
 }

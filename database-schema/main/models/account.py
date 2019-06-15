@@ -13,7 +13,6 @@ class ArtiefactUser(Base):
 
     id = Column(BIGINT, primary_key=True)
     password = Column(TEXT, nullable=False)
-    email = Column(TEXT, nullable=False)
     birthday = Column(Date, nullable=False)
     register_datetime = Column(DateTime(timezone=True), nullable=False)
     status = Column(TEXT, nullable=False, index=True)

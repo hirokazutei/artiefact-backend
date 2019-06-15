@@ -15,10 +15,15 @@ from .account import (
 from .tokens import (
     AccessToken, AccessTokenUse
 )  # NOQA
+from .email import (
+    RegisteredEmail, EmailVerification, EmailVerificationRequest
+)
 
 __all__ = [
     # account
     'ArtiefactUser', 'Username', 'Profile', 'ProfilePicture',
     # token
     'AccessToken', 'AccessTokenUse'
+    # Email
+    'RegisteredEmail', 'EmailVerification', 'EmailVerificationRequest'
 ]

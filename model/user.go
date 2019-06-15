@@ -27,6 +27,36 @@ func IfUsernameExist(db Queryer, username string) (bool, error) {
 	return true, nil
 }
 
+// GetActiveArtiefactUserByID obtains ArtiefactUser by ID
+func GetActiveArtiefactUserByID(db Queryer, id int64) (*ArtiefactUser, bool, error) {
+	var au ArtiefactUser
+	err := db.QueryRow(
+		`SELECT
+			id,
+			password,
+			email,
+			birthday
+			register_datetime
+			status
+		FROM
+			artiefact_user
+		WHERE
+			id = $1`, id).Scan(
+		&au.ID,
+		&au.Password,
+		&au.Email,
+		&au.Birthday,
+		&au.RegisterDatetime,
+		&au.Status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, false, nil
+		}
+		return nil, false, errors.Wrap(err, "IfUsernameExist failed")
+	}
+	return &au, true, nil
+}
+
 // GetArtiefactUserByUsername obtains ArtiefactUser by Username
 func GetArtiefactUserByUsername(db Queryer, username string) (*ArtiefactUser, error) {
 	var au ArtiefactUser
