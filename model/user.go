@@ -34,7 +34,6 @@ func GetActiveArtiefactUserByID(db Queryer, id int64) (*ArtiefactUser, bool, err
 		`SELECT
 			id,
 			password,
-			email,
 			birthday
 			register_datetime
 			status
@@ -44,7 +43,6 @@ func GetActiveArtiefactUserByID(db Queryer, id int64) (*ArtiefactUser, bool, err
 			id = $1`, id).Scan(
 		&au.ID,
 		&au.Password,
-		&au.Email,
 		&au.Birthday,
 		&au.RegisterDatetime,
 		&au.Status)
@@ -64,7 +62,6 @@ func GetArtiefactUserByUsername(db Queryer, username string) (*ArtiefactUser, er
 		`SELECT
 			id,
 			password,
-			email,
 			birthday
 			register_datetime
 			status
@@ -79,7 +76,6 @@ func GetArtiefactUserByUsername(db Queryer, username string) (*ArtiefactUser, er
 		strings.ToLower(username)).Scan(
 		&au.ID,
 		&au.Password,
-		&au.Email,
 		&au.Birthday,
 		&au.RegisterDatetime,
 		&au.Status)

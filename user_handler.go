@@ -43,18 +43,19 @@ func (h UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // SignUpHandler create user and return token
 func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	var param schema.UserSignupRequest
+	var param schema.ArtiefactUserSignUpRequest
 
 	// Validate the JSON coming in with the appropriate JSON-Schema Validator
-	res, err := schema.Validate(&param, schema.UserSignupValidator, r)
-	fmt.Println(res) // kaz
+	res, err := schema.Validate(&param, schema.ArtiefactUserSignUpValidator, r)
+	fmt.Println(res)
 	if err != nil {
 		// json.NewEncoder(w).Encode(res)
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("validating", "request"))
-		fmt.Println(err.Error()) // kaz
+		fmt.Println(err.Error())
 		return e.GenerateResponse()
 	}
+	fmt.Println(param)
 
 	// Begin Database
 	tx, err := app.DB.Begin()
@@ -66,7 +67,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	defer tx.Rollback()
 
 	// Check if Email is taken
-	emailExists, err := model.IfEmailExist(tx, param.Email)
+	emailExists, err := model.IfEmailExist(tx, strings.ToLower(param.Email))
 	if err != nil {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "email"))
@@ -127,7 +128,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	// Create the user
 	newUser := model.ArtiefactUser{
 		Password:         hashedPassword,
-		Email:            param.Email,
 		Birthday:         birthday,
 		RegisterDatetime: time.Now(),
 		Status:           c.UserUnverified,
@@ -165,7 +165,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		"user_id":         newUser.ID,
 		"expiry_datetime": tokenExpiryDatetime,
 		"obtained_by":     c.TokenObtainedBySignup,
-		"tokenType":       c.TokenTypeLogin,
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
@@ -177,7 +176,7 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		GeneratedDatetime: tokenGeneratedDatetime,
 		ExpiryDatetime:    tokenExpiryDatetime,
 		ObtainedBy:        c.TokenObtainedBySignup,
-		TokenType:         c.TokenTypeLogin,
+		Active:            true,
 	}
 
 	err = newToken.Create(tx)
@@ -198,8 +197,26 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	}
 
 	// Create Response
-	response := schema.UserSignupResponse{
-		Token: tokenString,
+	resToken := schema.AccessToken{
+		Token:             newToken.Token,
+		UserID:            newToken.UserID,
+		GeneratedDatetime: newToken.GeneratedDatetime,
+		ExpiryDatetime:    newToken.ExpiryDatetime,
+		ObtainedBy:        newToken.ObtainedBy,
+		Active:            newToken.Active,
+	}
+
+	resUser := schema.ArtiefactUser{
+		ID:               newUser.ID,
+		Birthday:         newUser.Birthday.Format(param.Birthday),
+		RegisterDatetime: newUser.RegisterDatetime,
+		Status:           newUser.Status,
+		Username:         newUsername.UsernameRaw,
+	}
+
+	response := schema.ArtiefactUserSignUpResponse{
+		AccessToken:   &resToken,
+		ArtiefactUser: &resUser,
 	}
 
 	// json.NewEncoder(w).Encode(response)
@@ -208,10 +225,10 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 
 // SignInHandler log-in user and create
 func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	var param schema.UserSignupRequest
+	var param schema.ArtiefactUserSignUpRequest
 
 	// Validate the JSON coming in with the appropriate JSON-Schema Validator
-	res, err := schema.Validate(&param, schema.UserSigninValidator, r)
+	res, err := schema.Validate(&param, schema.ArtiefactUserSignInValidator, r)
 	fmt.Println(res)
 
 	if err != nil {
@@ -274,7 +291,7 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, 
 		GeneratedDatetime: tokenGeneratedDatetime,
 		ExpiryDatetime:    tokenExpiryDatetime,
 		ObtainedBy:        c.TokenObtainedBySignup,
-		TokenType:         c.TokenTypeLogin,
+		Active:            true,
 	}
 
 	err = newToken.Create(tx)
@@ -293,8 +310,26 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, 
 	}
 
 	// Create Response
-	response := schema.UserSignupResponse{
-		Token: tokenString,
+	resToken := schema.AccessToken{
+		Token:             newToken.Token,
+		UserID:            newToken.UserID,
+		GeneratedDatetime: newToken.GeneratedDatetime,
+		ExpiryDatetime:    newToken.ExpiryDatetime,
+		ObtainedBy:        newToken.ObtainedBy,
+		Active:            newToken.Active,
+	}
+
+	resUser := schema.ArtiefactUser{
+		ID:               au.ID,
+		Birthday:         au.Birthday.Format(param.Birthday),
+		RegisterDatetime: au.RegisterDatetime,
+		Status:           au.Status,
+		Username:         param.Username,
+	}
+
+	response := schema.ArtiefactUserSignUpResponse{
+		AccessToken:   &resToken,
+		ArtiefactUser: &resUser,
 	}
 
 	// json.NewEncoder(w).Encode(response)

@@ -1,109 +1,150 @@
 {
-  "title": "artiefact user",
-  "description": "artiefact user",
+  "title": "artiefact_user",
+  "description": "artiefact_user",
   "stability": "prototype",
   "strictProperties": true,
   "type": ["object"],
   "definitions": {
-    "birthday": {
-      "description": "birthdate of the user",
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-      "example": "1991-04-26",
-      "type": ["string"]
+    "identity": {
+      "$ref": "/schemata/artiefact_user#/definitions/id"
     },
     "id": {
       "description": "the ID of the artiefact user",
       "readOnly": true,
-      "example": "hirokazu.tei",
-      "type": ["string"]
+      "example": 13124,
+      "type": ["integer"]
     },
     "password": {
       "description": "unhashed password of the user",
+      "readOnly": true,
       "example": "Password123",
       "type": ["string"]
     },
-    "register_date": {
-      "description": "the date that the user has registered",
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+    "birthday": {
+      "description": "birthdate of the user",
+      "readOnly": true,
+      "pattern": "^[1-2]{1}[0-9]{3}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}",
       "example": "1991-04-26",
       "type": ["string"]
     },
-    "email": {
-      "description": "the email of the user",
-      "example": "hirokazutei@gmail.com",
+    "register_datetime": {
+      "description": "the date that the user has registered",
+      "readOnly": true,
+      "format": "date-time",
+      "example": "2015-12-19T12:13:14Z",
       "type": ["string"]
     },
     "status": {
       "description": "the status of the user",
       "example": "active",
       "type": ["string"],
-      "enum": ["unverified", "active", "deactivated", "deleted", "suspended"]
+      "enum": [
+        "unverified",
+        "active",
+        "deactivated",
+        "deleted",
+        "suspended",
+        "tester",
+        "super"
+      ]
     },
     "username": {
       "description": "name of the user",
+      "pattern": "^[0-9a-zA-Z._-]{4,32}",
       "example": "hirokazu.tei",
       "type": ["string"]
     }
   },
   "links": [
     {
-      "description": "signup",
-      "href": "/signup",
+      "description": "sign-up",
+      "href": "/sign-up",
       "method": "POST",
-      "rel": "signup",
+      "rel": "sign-up",
       "schema": {
         "properties": {
           "username": {
-            "$ref": "/schemata/user#/definitions/username"
+            "$ref": "/schemata/artiefact_user#/definitions/username"
           },
           "birthday": {
-            "$ref": "/schemata/user#/definitions/birthday"
+            "$ref": "/schemata/artiefact_user#/definitions/birthday"
           },
           "password": {
-            "$ref": "/schemata/user#/definitions/password"
+            "$ref": "/schemata/artiefact_user#/definitions/password"
           },
           "email": {
-            "$ref": "/schemata/user#/definitions/email"
+            "$ref": "/schemata/registered_email#/definitions/email"
           }
         },
         "type": ["object"],
-        "required": ["username", "birthday", "email", "password"]
+        "required": ["username", "birthday", "password"]
       },
       "targetSchema": {
         "properties": {
-          "token": {
-            "$ref": "/schemata/token#/definitions/token"
+          "artiefact_user": {
+            "$ref": "/schemata/artiefact_user"
+          },
+          "access_token": {
+            "$ref": "/schemata/access_token"
           }
         },
-        "required": ["token"],
+        "required": ["user", "token"],
         "type": ["object"]
       },
-      "title": "test"
+      "title": "sign-up"
+    },
+    {
+      "description": "sign-in",
+      "href": "/sign-in",
+      "method": "POST",
+      "rel": "sign-in",
+      "schema": {
+        "properties": {
+          "username": {
+            "$ref": "/schemata/artiefact_user#/definitions/username"
+          },
+          "password": {
+            "$ref": "/schemata/artiefact_user#/definitions/password"
+          }
+        },
+        "type": ["object"],
+        "required": ["username", "password"]
+      },
+      "targetSchema": {
+        "properties": {
+          "artiefact_user": {
+            "$ref": "/schemata/artiefact_user"
+          },
+          "access_token": {
+            "$ref": "/schemata/access_token"
+          }
+        },
+        "required": ["artiefact_user", "access_token"],
+        "type": ["object"]
+      },
+      "title": "sign-in"
     }
   ],
   "properties": {
     "birthday": {
-      "$ref": "/schemata/user#/definitions/birthday"
+      "$ref": "/schemata/artiefact_user#/definitions/birthday"
     },
     "username": {
-      "$ref": "/schemata/user#/definitions/username"
+      "$ref": "/schemata/artiefact_user#/definitions/username"
     },
     "id": {
-      "$ref": "/schemata/user#/definitions/id"
+      "$ref": "/schemata/artiefact_user#/definitions/id"
     },
-    "email": {
-      "$ref": "/schemata/user#/definitions/email"
-    },
-    "register_date": {
-      "$ref": "/schemata/user#/definitions/register_date"
+    "register_datetime": {
+      "$ref": "/schemata/artiefact_user#/definitions/register_datetime"
     },
     "status": {
-      "$ref": "/schemata/user#/definitions/status"
+      "$ref": "/schemata/artiefact_user#/definitions/status"
     },
     "password": {
-      "$ref": "/schemata/user#/definitions/password"
+      "$ref": "/schemata/artiefact_user#/definitions/password"
     }
   },
-  "required": ["username", "birthday", "password", "email"],
-  "id": "schemata/user"
+  "required": ["username", "birthday", "id", "status"],
+  "id": "schemata/artiefact_user"
 }

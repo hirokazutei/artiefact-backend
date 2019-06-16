@@ -16,7 +16,7 @@ func GetValidToken(db Queryer, token string) (*AccessToken, bool, error) {
 			generated_datetime,
 			expiry_datetime,
 			obtained_by,
-			expired
+			active,
 		FROM
 			access_tokens
 		WHERE
@@ -28,7 +28,7 @@ func GetValidToken(db Queryer, token string) (*AccessToken, bool, error) {
 		&t.GeneratedDatetime,
 		&t.ExpiryDatetime,
 		&t.ObtainedBy,
-		&t.Expired,
+		&t.Active,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {

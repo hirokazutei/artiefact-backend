@@ -10,7 +10,7 @@ import (
 func IfEmailExist(db Queryer, email string) (bool, error) {
 	var foundEmail string
 	err := db.QueryRow(
-		`SELECT email FROM artiefact_user WHERE email = $1`,
+		`SELECT email_lower FROM registered_email WHERE email_lower = $1`,
 		email).Scan(&foundEmail)
 	if err != nil {
 		if err == sql.ErrNoRows {

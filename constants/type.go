@@ -7,6 +7,6 @@ const (
 
 // Token Obtained By
 const (
-	TokenObtainedBySignup = "signup"
+	TokenObtainedBySignup = "sign-up"
 	TokenObtainedByLogin  = "login"
 )

@@ -1,6 +1,6 @@
 {
   "description": "Artiefact API",
   "id": "artiefact",
-  "links": [{ "href": "https:/localhost:8000/" }, { "rel": "self" }],
+  "links": [{ "href": "https:/localhost:8000/", "rel": "self" }],
   "title": "Artiefact API Schema"
 }

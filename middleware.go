@@ -14,8 +14,8 @@ import (
 )
 
 var openAPIs = []string{
-	"/user/signUp",
-	"/user/signIn",
+	"/user/sign-up",
+	"/user/sign-in",
 }
 
 var tokenRegex = regexp.MustCompile(`^(?i)bearer (\w+)$`)

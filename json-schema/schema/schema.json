@@ -1,194 +1,369 @@
 {
   "$schema": "http://interagent.github.io/interagent-hyper-schema",
-  "type": ["object"],
+  "type": [
+    "object"
+  ],
   "definitions": {
-    "token": {
+    "registered_email": {
+      "title": "email",
+      "description": "email",
+      "stability": "prototype",
+      "strictProperties": true,
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "identity": {
+          "$ref": "#/definitions/registered_email/definitions/id"
+        },
+        "id": {
+          "description": "the ID of the registered email",
+          "readOnly": true,
+          "example": 12312,
+          "type": [
+            "integer"
+          ]
+        },
+        "email": {
+          "description": "the email of the user",
+          "format": "email",
+          "example": "hirokazutei@gmail.com",
+          "type": [
+            "string"
+          ]
+        },
+        "status": {
+          "description": "status of the registered email",
+          "example": "active",
+          "type": [
+            "string"
+          ],
+          "enum": [
+            "unverified",
+            "verified",
+            "unused"
+          ]
+        }
+      },
+      "links": [
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/registered_email/definitions/id"
+        },
+        "email": {
+          "$ref": "#/definitions/registered_email/definitions/email"
+        },
+        "status": {
+          "$ref": "#/definitions/registered_email/definitions/status"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "email"
+      ]
+    },
+    "access_token": {
       "title": "access token",
       "description": "access token",
       "stability": "prototype",
       "strictProperties": true,
-      "type": ["object"],
+      "type": [
+        "object"
+      ],
       "definitions": {
+        "identity": {
+          "$ref": "#/definitions/access_token/definitions/token"
+        },
         "token": {
           "description": "access token for the app",
           "readOnly": true,
           "example": "IFE*FH#IOWO*F*#R&#@_(*FHITHINK",
-          "type": ["string"]
+          "type": [
+            "string"
+          ]
         },
-        "token_type": {
-          "description": "what the token is for",
+        "user_id": {
+          "description": "the user_id the token belongs to",
+          "readOnly": true,
+          "example": 12321,
+          "type": [
+            "integer"
+          ]
+        },
+        "generated_datetime": {
+          "description": "the datetime of when the token was generated",
+          "readOnly": true,
+          "format": "date-time",
+          "example": "2012-04-26 12:23:20",
+          "type": [
+            "string"
+          ]
+        },
+        "expiry_datetime": {
+          "description": "the datetime of when the token expires",
+          "readOnly": true,
+          "format": "date-time",
+          "example": "2012-09-26 12:23:20",
+          "type": [
+            "string"
+          ]
+        },
+        "obtained_by": {
+          "description": "how the token was obtained",
           "readOnly": true,
           "example": "login",
-          "type": ["string"]
+          "type": [
+            "string"
+          ]
+        },
+        "active": {
+          "description": "if the token is active or not",
+          "readOnly": true,
+          "example": true,
+          "type": [
+            "boolean"
+          ]
         }
       },
+      "links": [
+      ],
       "properties": {
         "token": {
-          "$ref": "#/definitions/token/definitions/token"
+          "$ref": "#/definitions/access_token/definitions/token"
         },
-        "status": {
-          "$ref": "#/definitions/token/definitions/token_type"
+        "user_id": {
+          "$ref": "#/definitions/access_token/definitions/user_id"
+        },
+        "generated_datetime": {
+          "$ref": "#/definitions/access_token/definitions/generated_datetime"
+        },
+        "expiry_datetime": {
+          "$ref": "#/definitions/access_token/definitions/expiry_datetime"
+        },
+        "obtained_by": {
+          "$ref": "#/definitions/access_token/definitions/obtained_by"
+        },
+        "active": {
+          "$ref": "#/definitions/access_token/definitions/active"
         }
-      }
+      },
+      "required": [
+        "token",
+        "user_id",
+        "generated_datetime",
+        "expiry_datetime",
+        "obtained_by",
+        "active"
+      ]
     },
-    "user": {
-      "title": "artiefact user",
-      "description": "artiefact user",
+    "artiefact_user": {
+      "title": "artiefact_user",
+      "description": "artiefact_user",
       "stability": "prototype",
       "strictProperties": true,
-      "type": ["object"],
+      "type": [
+        "object"
+      ],
       "definitions": {
-        "birthday": {
-          "description": "birthdate of the user",
-          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-          "example": "1991-04-26",
-          "type": ["string"]
+        "identity": {
+          "$ref": "#/definitions/artiefact_user/definitions/id"
         },
         "id": {
           "description": "the ID of the artiefact user",
           "readOnly": true,
-          "example": "hirokazu.tei",
-          "type": ["string"]
+          "example": 13124,
+          "type": [
+            "integer"
+          ]
         },
         "password": {
           "description": "unhashed password of the user",
+          "readOnly": true,
           "example": "Password123",
-          "type": ["string"]
+          "type": [
+            "string"
+          ]
         },
-        "register_date": {
-          "description": "the date that the user has registered",
-          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "birthday": {
+          "description": "birthdate of the user",
+          "readOnly": true,
+          "pattern": "^[1-2]{1}[0-9]{3}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}",
           "example": "1991-04-26",
-          "type": ["string"]
+          "type": [
+            "string"
+          ]
         },
-        "email": {
-          "description": "the email of the user",
-          "example": "hirokazutei@gmail.com",
-          "type": ["string"]
+        "register_datetime": {
+          "description": "the date that the user has registered",
+          "readOnly": true,
+          "format": "date-time",
+          "example": "2015-12-19T12:13:14Z",
+          "type": [
+            "string"
+          ]
         },
         "status": {
           "description": "the status of the user",
           "example": "active",
-          "type": ["string"],
+          "type": [
+            "string"
+          ],
           "enum": [
             "unverified",
             "active",
             "deactivated",
             "deleted",
-            "suspended"
+            "suspended",
+            "tester",
+            "super"
           ]
         },
         "username": {
           "description": "name of the user",
+          "pattern": "^[0-9a-zA-Z._-]{4,32}",
           "example": "hirokazu.tei",
-          "type": ["string"]
+          "type": [
+            "string"
+          ]
         }
       },
       "links": [
         {
-          "description": "signup",
-          "href": "/signup",
+          "description": "sign-up",
+          "href": "/sign-up",
           "method": "POST",
-          "rel": "signup",
+          "rel": "sign-up",
           "schema": {
             "properties": {
               "username": {
-                "$ref": "#/definitions/user/definitions/username"
+                "$ref": "#/definitions/artiefact_user/definitions/username"
               },
               "birthday": {
-                "$ref": "#/definitions/user/definitions/birthday"
+                "$ref": "#/definitions/artiefact_user/definitions/birthday"
               },
               "password": {
-                "$ref": "#/definitions/user/definitions/password"
+                "$ref": "#/definitions/artiefact_user/definitions/password"
               },
               "email": {
-                "$ref": "#/definitions/user/definitions/email"
+                "$ref": "#/definitions/registered_email/definitions/email"
               }
             },
-            "type": ["object"],
-            "required": ["username", "birthday", "email", "password"]
+            "type": [
+              "object"
+            ],
+            "required": [
+              "username",
+              "birthday",
+              "password"
+            ]
           },
           "targetSchema": {
             "properties": {
-              "token": {
-                "$ref": "#/definitions/token/definitions/token"
+              "artiefact_user": {
+                "$ref": "#/definitions/artiefact_user"
+              },
+              "access_token": {
+                "$ref": "#/definitions/access_token"
               }
             },
-            "required": ["token"],
-            "type": ["object"]
+            "required": [
+              "user",
+              "token"
+            ],
+            "type": [
+              "object"
+            ]
           },
-          "title": "test"
+          "title": "sign-up"
         },
         {
-          "description": "signin",
-          "href": "/signin",
+          "description": "sign-in",
+          "href": "/sign-in",
           "method": "POST",
-          "rel": "signin",
+          "rel": "sign-in",
           "schema": {
             "properties": {
               "username": {
-                "$ref": "#/definitions/user/definitions/username"
+                "$ref": "#/definitions/artiefact_user/definitions/username"
               },
               "password": {
-                "$ref": "#/definitions/user/definitions/password"
+                "$ref": "#/definitions/artiefact_user/definitions/password"
               }
             },
-            "type": ["object"],
-            "required": ["username", "password"]
+            "type": [
+              "object"
+            ],
+            "required": [
+              "username",
+              "password"
+            ]
           },
           "targetSchema": {
             "properties": {
-              "token": {
-                "$ref": "#/definitions/token/definitions/token"
+              "artiefact_user": {
+                "$ref": "#/definitions/artiefact_user"
+              },
+              "access_token": {
+                "$ref": "#/definitions/access_token"
               }
             },
-            "required": ["token"],
-            "type": ["object"]
+            "required": [
+              "artiefact_user",
+              "access_token"
+            ],
+            "type": [
+              "object"
+            ]
           },
-          "title": "test"
+          "title": "sign-in"
         }
       ],
       "properties": {
         "birthday": {
-          "$ref": "#/definitions/user/definitions/birthday"
+          "$ref": "#/definitions/artiefact_user/definitions/birthday"
         },
         "username": {
-          "$ref": "#/definitions/user/definitions/username"
+          "$ref": "#/definitions/artiefact_user/definitions/username"
         },
         "id": {
-          "$ref": "#/definitions/user/definitions/id"
+          "$ref": "#/definitions/artiefact_user/definitions/id"
         },
-        "email": {
-          "$ref": "#/definitions/user/definitions/email"
-        },
-        "register_date": {
-          "$ref": "#/definitions/user/definitions/register_date"
+        "register_datetime": {
+          "$ref": "#/definitions/artiefact_user/definitions/register_datetime"
         },
         "status": {
-          "$ref": "#/definitions/user/definitions/status"
+          "$ref": "#/definitions/artiefact_user/definitions/status"
         },
         "password": {
-          "$ref": "#/definitions/user/definitions/password"
+          "$ref": "#/definitions/artiefact_user/definitions/password"
         }
       },
-      "required": ["username", "birthday", "password", "email"]
+      "required": [
+        "username",
+        "birthday",
+        "id",
+        "password"
+      ]
     }
   },
   "properties": {
-    "token": {
-      "$ref": "#/definitions/token"
+    "registered_email": {
+      "$ref": "#/definitions/registered_email"
     },
-    "user": {
-      "$ref": "#/definitions/user"
+    "access_token": {
+      "$ref": "#/definitions/access_token"
+    },
+    "artiefact_user": {
+      "$ref": "#/definitions/artiefact_user"
     }
   },
   "description": "Artiefact API",
   "id": "artiefact",
   "links": [
     {
-      "href": "https:/localhost:8000/"
-    },
-    {
+      "href": "https:/localhost:8000/",
       "rel": "self"
     }
   ],

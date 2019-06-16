@@ -14,7 +14,6 @@ class RegisteredEmail(Base):
     user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), index=True, unique=False, nullable=False)
     email = Column(TEXT, nullable=False)
     email_lower = Column(TEXT, nullable=False)
-    last_used_datetime = Column(DateTime(timezone=True), nullable=False)
     status = Column(TEXT, nullable=False)
 
     user = relationship('artiefact_user', backref=backref('registered_email'))

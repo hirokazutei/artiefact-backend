@@ -1,0 +1,44 @@
+{
+  "title": "email",
+  "description": "email",
+  "stability": "prototype",
+  "strictProperties": true,
+  "type": ["object"],
+  "definitions": {
+    "identity": {
+      "$ref": "/schemata/registered_email#/definitions/id"
+    },
+    "id": {
+      "description": "the ID of the registered email",
+      "readOnly": true,
+      "example": 12312,
+      "type": ["integer"]
+    },
+    "email": {
+      "description": "the email of the user",
+      "format": "email",
+      "example": "hirokazutei@gmail.com",
+      "type": ["string"]
+    },
+    "status": {
+      "description": "status of the registered email",
+      "example": "active",
+      "type": ["string"],
+      "enum": ["unverified", "verified", "unused"]
+    }
+  },
+  "links": [],
+  "properties": {
+    "id": {
+      "$ref": "/schemata/registered_email#/definitions/id"
+    },
+    "email": {
+      "$ref": "/schemata/registered_email#/definitions/email"
+    },
+    "status": {
+      "$ref": "/schemata/registered_email#/definitions/status"
+    }
+  },
+  "required": ["id", "status", "email"],
+  "id": "schemata/registered_email"
+}
