@@ -16,9 +16,9 @@ type AccessToken struct {
 type ArtiefactUser struct {
 	Birthday         string    `json:"birthday"`
 	ID               int64     `json:"id"`
-	Password         string    `json:"password"`
+	Password         string    `json:"password,omitempty"`
 	RegisterDatetime time.Time `json:"register_datetime,omitempty"`
-	Status           string    `json:"status,omitempty"`
+	Status           string    `json:"status"`
 	Username         string    `json:"username"`
 }
 
@@ -32,7 +32,7 @@ type RegisteredEmail struct {
 // ArtiefactUserSignInRequest struct for artiefact_user
 // POST: /sign-in
 type ArtiefactUserSignInRequest struct {
-	Password string `json:"password"`
+	Password string `json:"password,omitempty"`
 	Username string `json:"username"`
 }
 
@@ -48,7 +48,7 @@ type ArtiefactUserSignInResponse struct {
 type ArtiefactUserSignUpRequest struct {
 	Birthday string `json:"birthday"`
 	Email    string `json:"email,omitempty"`
-	Password string `json:"password"`
+	Password string `json:"password,omitempty"`
 	Username string `json:"username"`
 }
 
@@ -57,4 +57,17 @@ type ArtiefactUserSignUpRequest struct {
 type ArtiefactUserSignUpResponse struct {
 	AccessToken   *AccessToken   `json:"access_token,omitempty"`
 	ArtiefactUser *ArtiefactUser `json:"artiefact_user,omitempty"`
+}
+
+// ArtiefactUserUsernameAvailabilityRequest struct for artiefact_user
+// POST: /username-availability
+type ArtiefactUserUsernameAvailabilityRequest struct {
+	Username string `json:"username"`
+}
+
+// ArtiefactUserUsernameAvailabilityResponse struct for artiefact_user
+// POST: /username-availability
+type ArtiefactUserUsernameAvailabilityResponse struct {
+	IsAvailable bool   `json:"is_available,omitempty"`
+	Username    string `json:"username"`
 }

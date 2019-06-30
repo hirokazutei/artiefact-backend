@@ -318,6 +318,48 @@
             ]
           },
           "title": "sign-in"
+        },
+        {
+          "description": "username-availability",
+          "href": "/username-availability",
+          "method": "POST",
+          "rel": "username-availability",
+          "schema": {
+            "properties": {
+              "username": {
+                "$ref": "#/definitions/artiefact_user/definitions/username"
+              }
+            },
+            "type": [
+              "object"
+            ],
+            "required": [
+              "username"
+            ]
+          },
+          "targetSchema": {
+            "properties": {
+              "username": {
+                "$ref": "#/definitions/artiefact_user/definitions/username"
+              },
+              "is_available": {
+                "description": "is the username available",
+                "readOnly": true,
+                "example": true,
+                "type": [
+                  "boolean"
+                ]
+              }
+            },
+            "required": [
+              "username",
+              "is_available"
+            ],
+            "type": [
+              "object"
+            ]
+          },
+          "title": "username-availability"
         }
       ],
       "properties": {
@@ -344,7 +386,7 @@
         "username",
         "birthday",
         "id",
-        "password"
+        "status"
       ]
     }
   },

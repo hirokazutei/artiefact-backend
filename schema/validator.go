@@ -4,6 +4,7 @@ import "github.com/lestrrat-go/jsval"
 
 var ArtiefactUserSignInValidator *jsval.JSVal
 var ArtiefactUserSignUpValidator *jsval.JSVal
+var ArtiefactUserUsernameAvailabilityValidator *jsval.JSVal
 var M *jsval.ConstraintMap
 var R0 jsval.Constraint
 var R1 jsval.Constraint
@@ -59,6 +60,21 @@ func init() {
 				AddProp(
 					"password",
 					jsval.Reference(M).RefersTo("#/definitions/artiefact_user/definitions/password"),
+				).
+				AddProp(
+					"username",
+					jsval.Reference(M).RefersTo("#/definitions/artiefact_user/definitions/username"),
+				),
+		)
+
+	ArtiefactUserUsernameAvailabilityValidator = jsval.New().
+		SetName("ArtiefactUserUsernameAvailabilityValidator").
+		SetConstraintMap(M).
+		SetRoot(
+			jsval.Object().
+				Required("username").
+				AdditionalProperties(
+					jsval.EmptyConstraint,
 				).
 				AddProp(
 					"username",

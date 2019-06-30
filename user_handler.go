@@ -49,7 +49,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	res, err := schema.Validate(&param, schema.ArtiefactUserSignUpValidator, r)
 	fmt.Println(res)
 	if err != nil {
-		// json.NewEncoder(w).Encode(res)
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("validating", "request"))
 		fmt.Println(err.Error())
@@ -61,7 +60,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	tx, err := app.DB.Begin()
 	if err != nil {
 		e := c.ErrorDatabaseBeginFailure()
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 	defer tx.Rollback()
@@ -72,12 +70,10 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "email"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 	if emailExists {
 		e := c.ErrorAlreadyExists("email")
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -90,12 +86,10 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "username"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 	if usernameExists {
 		e := c.ErrorAlreadyExists("username")
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -111,17 +105,16 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("generating", "password"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
 	// Convert Birthday
 	birthday, err := time.Parse(c.DateFormat, param.Birthday)
 	if err != nil {
+		fmt.Println("GErrored here")
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("parsing", "birthday"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -138,7 +131,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("creating", "artiefact_user"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -153,7 +145,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("creating", "username"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -184,7 +175,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("creating", "token"))
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -192,7 +182,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	if err != nil {
 		e := c.ErrorDatabaseCommitFailure()
 		fmt.Println(err.Error())
-		json.NewEncoder(w).Encode(e)
 		return e.GenerateResponse()
 	}
 
@@ -218,22 +207,20 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		AccessToken:   &resToken,
 		ArtiefactUser: &resUser,
 	}
-
 	// json.NewEncoder(w).Encode(response)
 	return http.StatusOK, response, nil
 }
 
 // SignInHandler log-in user and create
 func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	var param schema.ArtiefactUserSignUpRequest
+	var param schema.ArtiefactUserSignInRequest
 
 	// Validate the JSON coming in with the appropriate JSON-Schema Validator
 	res, err := schema.Validate(&param, schema.ArtiefactUserSignInValidator, r)
 	fmt.Println(res)
-
 	if err != nil {
 		e := c.ErrorInternalServer()
-		e.AddDetail(c.ErrorAction("generating", "password"))
+		e.AddDetail(c.ErrorAction("validating", "request"))
 		fmt.Println(err.Error())
 		return e.GenerateResponse()
 	}
@@ -321,7 +308,7 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, 
 
 	resUser := schema.ArtiefactUser{
 		ID:               au.ID,
-		Birthday:         au.Birthday.Format(param.Birthday),
+		Birthday:         au.Birthday.Format(c.DateFormat),
 		RegisterDatetime: au.RegisterDatetime,
 		Status:           au.Status,
 		Username:         param.Username,
@@ -330,6 +317,50 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, 
 	response := schema.ArtiefactUserSignUpResponse{
 		AccessToken:   &resToken,
 		ArtiefactUser: &resUser,
+	}
+
+	// json.NewEncoder(w).Encode(response)
+	return http.StatusOK, response, nil
+}
+
+// UsernameAvailabilityHandler check to see if the username is available
+func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	var param schema.ArtiefactUserUsernameAvailabilityRequest
+
+	// Validate the JSON coming in with the appropriate JSON-Schema Validator
+	res, err := schema.Validate(&param, schema.ArtiefactUserUsernameAvailabilityValidator, r)
+	fmt.Println(res)
+
+	if err != nil {
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("generating", "password"))
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
+	}
+	// Begin Database
+	tx, err := app.DB.Begin()
+	if err != nil {
+		e := c.ErrorDatabaseBeginFailure()
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
+	}
+	defer tx.Rollback()
+
+	_, found, err := model.GetUsernameByUsername(tx, param.Username)
+	if err != nil {
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("querying", "username"))
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
+	}
+	var response = schema.ArtiefactUserUsernameAvailabilityResponse{
+		Username:    param.Username,
+		IsAvailable: false,
+	}
+
+	if !found {
+		response.IsAvailable = true
+		fmt.Println("hey")
 	}
 
 	// json.NewEncoder(w).Encode(response)

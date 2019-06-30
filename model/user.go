@@ -34,8 +34,8 @@ func GetActiveArtiefactUserByID(db Queryer, id int64) (*ArtiefactUser, bool, err
 		`SELECT
 			id,
 			password,
-			birthday
-			register_datetime
+			birthday,
+			register_datetime,
 			status
 		FROM
 			artiefact_user
@@ -50,7 +50,7 @@ func GetActiveArtiefactUserByID(db Queryer, id int64) (*ArtiefactUser, bool, err
 		if err == sql.ErrNoRows {
 			return nil, false, nil
 		}
-		return nil, false, errors.Wrap(err, "IfUsernameExist failed")
+		return nil, false, errors.Wrap(err, "GetActiveArtiefactUserByID failed")
 	}
 	return &au, true, nil
 }
@@ -62,8 +62,8 @@ func GetArtiefactUserByUsername(db Queryer, username string) (*ArtiefactUser, er
 		`SELECT
 			id,
 			password,
-			birthday
-			register_datetime
+			birthday,
+			register_datetime,
 			status
 		FROM
 			artiefact_user au
@@ -83,7 +83,32 @@ func GetArtiefactUserByUsername(db Queryer, username string) (*ArtiefactUser, er
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, errors.Wrap(err, "IfUsernameExist failed")
+		return nil, errors.Wrap(err, "GetArtiefactUserByUsername failed")
 	}
 	return &au, nil
+}
+
+// GetUsernameByUsername obtains Username by Username
+func GetUsernameByUsername(db Queryer, username string) (*Username, bool, error) {
+	var u Username
+	err := db.QueryRow(
+		`SELECT
+			user_id,
+			username_lower,
+			username_raw
+		FROM
+			username u
+		WHERE
+			username_lower = $1`,
+		strings.ToLower(username)).Scan(
+		&u.UserID,
+		&u.UsernameLower,
+		&u.UsernameRaw)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, false, nil
+		}
+		return nil, false, errors.Wrap(err, "GetUsernameByUsername failed")
+	}
+	return &u, true, nil
 }
