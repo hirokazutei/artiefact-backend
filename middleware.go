@@ -19,7 +19,7 @@ var openAPIs = []string{
 	"/user/username-availability",
 }
 
-var tokenRegex = regexp.MustCompile(`^(?i)bearer (\w+)$`)
+var tokenRegex = regexp.MustCompile(`^(?i)bearer (.+)$`)
 
 // AuthResponse response object
 type AuthResponse struct {
@@ -103,7 +103,7 @@ func tokenAuthMiddleware(app *App) func(next http.Handler) http.Handler {
 
 				response.User = user
 				response.Token = matchedToken
-				ctx := context.WithValue(r.Context(), contextKeyAuth, response)
+				ctx := context.WithValue(r.Context(), contextKeyAuth, &response)
 				r = r.WithContext(ctx)
 			}
 			next.ServeHTTP(w, r)

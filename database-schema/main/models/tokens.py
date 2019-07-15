@@ -11,7 +11,8 @@ class AccessToken(Base):
     __tablename__ = 'access_token'
 
     token = Column(TEXT, primary_key=True, index=True)
-    user_id = Column(BIGINT, nullable=False, index=True)
+    # This cannot be an index
+    user_id = Column(BIGINT, nullable=False)
     generated_datetime = Column(DateTime(timezone=True), nullable=False)
     expiry_datetime = Column(DateTime(timezone=True), nullable=False)
     obtained_by = Column(TEXT, nullable=False)

@@ -112,3 +112,28 @@ func GetUsernameByUsername(db Queryer, username string) (*Username, bool, error)
 	}
 	return &u, true, nil
 }
+
+// GetUsernameByUserID obtains Username by Artiefact User ID
+func GetUsernameByUserID(db Queryer, id int64) (*Username, bool, error) {
+	var u Username
+	err := db.QueryRow(
+		`SELECT
+			user_id,
+			username_lower,
+			username_raw
+		FROM
+			username u
+		WHERE
+			user_id = $1`,
+		id).Scan(
+		&u.UserID,
+		&u.UsernameLower,
+		&u.UsernameRaw)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, false, nil
+		}
+		return nil, false, errors.Wrap(err, "GetUsernameByUsername failed")
+	}
+	return &u, true, nil
+}

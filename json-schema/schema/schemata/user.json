@@ -125,6 +125,22 @@
       "title": "sign-in"
     },
     {
+      "description": "get-user",
+      "href": "/get-user",
+      "method": "GET",
+      "rel": "get-user",
+      "targetSchema": {
+        "properties": {
+          "artiefact_user": {
+            "$ref": "/schemata/artiefact_user"
+          }
+        },
+        "required": ["artiefact_user"],
+        "type": ["object"]
+      },
+      "title": "get-user"
+    },
+    {
       "description": "username-availability",
       "href": "/username-availability",
       "method": "POST",

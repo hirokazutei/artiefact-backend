@@ -2,6 +2,7 @@ package schema
 
 import "github.com/lestrrat-go/jsval"
 
+var ArtiefactUserGetUserValidator *jsval.JSVal
 var ArtiefactUserSignInValidator *jsval.JSVal
 var ArtiefactUserSignUpValidator *jsval.JSVal
 var ArtiefactUserUsernameAvailabilityValidator *jsval.JSVal
@@ -21,6 +22,13 @@ func init() {
 	M.SetReference("#/definitions/artiefact_user/definitions/password", R1)
 	M.SetReference("#/definitions/artiefact_user/definitions/username", R2)
 	M.SetReference("#/definitions/registered_email/definitions/email", R3)
+	ArtiefactUserGetUserValidator = jsval.New().
+		SetName("ArtiefactUserGetUserValidator").
+		SetConstraintMap(M).
+		SetRoot(
+			jsval.EmptyConstraint,
+		)
+
 	ArtiefactUserSignInValidator = jsval.New().
 		SetName("ArtiefactUserSignInValidator").
 		SetConstraintMap(M).

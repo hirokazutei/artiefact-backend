@@ -56,6 +56,8 @@ func Serve(confPath string) {
 	userRouter := router.PathPrefix("/user").Subrouter()
 
 	// sign-up
+	userRouter.Methods("GET").Path("/get-user").Handler(
+		middlewareChain.Then(UserHandler{handler: userApp.GetUserHandler}))
 	userRouter.Methods("POST").Path("/sign-in").Handler(
 		middlewareChain.Then(UserHandler{handler: userApp.SignInHandler}))
 	userRouter.Methods("POST").Path("/sign-up").Handler(

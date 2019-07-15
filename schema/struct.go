@@ -29,6 +29,12 @@ type RegisteredEmail struct {
 	Status string `json:"status"`
 }
 
+// ArtiefactUserGetUserResponse struct for artiefact_user
+// GET: /get-user
+type ArtiefactUserGetUserResponse struct {
+	ArtiefactUser *ArtiefactUser `json:"artiefact_user,omitempty" schema:"artiefact_user"`
+}
+
 // ArtiefactUserSignInRequest struct for artiefact_user
 // POST: /sign-in
 type ArtiefactUserSignInRequest struct {

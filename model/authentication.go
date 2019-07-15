@@ -16,12 +16,12 @@ func GetValidToken(db Queryer, token string) (*AccessToken, bool, error) {
 			generated_datetime,
 			expiry_datetime,
 			obtained_by,
-			active,
+			active
 		FROM
-			access_tokens
+			access_token
 		WHERE
 			token = $1
-			AND expired = false`,
+			AND active = true`,
 		token).Scan(
 		&t.Token,
 		&t.UserID,

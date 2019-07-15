@@ -111,7 +111,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	// Convert Birthday
 	birthday, err := time.Parse(c.DateFormat, param.Birthday)
 	if err != nil {
-		fmt.Println("GErrored here")
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("parsing", "birthday"))
 		fmt.Println(err.Error())
@@ -207,7 +206,6 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 		AccessToken:   &resToken,
 		ArtiefactUser: &resUser,
 	}
-	// json.NewEncoder(w).Encode(response)
 	return http.StatusOK, response, nil
 }
 
@@ -319,7 +317,54 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, 
 		ArtiefactUser: &resUser,
 	}
 
-	// json.NewEncoder(w).Encode(response)
+	return http.StatusOK, response, nil
+}
+
+// GetUserHandler obtains user associated with the token and returns the user.
+func (app *UserApp) GetUserHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	ctx := r.Context()
+	u, ok := ctx.Value(contextKeyAuth).(*AuthResponse)
+	if !ok {
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("obtaining", "context value"))
+		return e.GenerateResponse()
+	}
+
+	// Begin Database
+	tx, err := app.DB.Begin()
+	if err != nil {
+		e := c.ErrorDatabaseBeginFailure()
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
+	}
+	defer tx.Rollback()
+
+	username, found, err := model.GetUsernameByUserID(tx, u.User.ID)
+	if err != nil {
+		e := c.ErrorInternalServer()
+		e.AddDetail(c.ErrorAction("querying", "username"))
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
+	}
+	if !found {
+		e := c.ErrorObjectNotFound("username")
+		return e.GenerateResponse()
+	}
+
+	resUser := schema.ArtiefactUser{
+		ID:               u.User.ID,
+		Birthday:         u.User.Birthday.Format(c.DateFormat),
+		RegisterDatetime: u.User.RegisterDatetime,
+		Status:           u.User.Status,
+		Username:         username.UsernameRaw,
+	}
+
+	// TODO: Should Return Other User Info as well
+
+	var response = schema.ArtiefactUserGetUserResponse{
+		ArtiefactUser: &resUser,
+	}
+
 	return http.StatusOK, response, nil
 }
 
@@ -360,9 +405,8 @@ func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.R
 
 	if !found {
 		response.IsAvailable = true
-		fmt.Println("hey")
 	}
-
-	// json.NewEncoder(w).Encode(response)
+	// Intentionally taking extra time
+	time.Sleep(2 * time.Second)
 	return http.StatusOK, response, nil
 }
