@@ -18,12 +18,17 @@ from .tokens import (
 from .email import (
     RegisteredEmail, EmailVerification, EmailVerificationRequest
 )
+from .artiefact import (
+    Artiefact, ArtiefactDiscovery, ArtiefactImage, ArtiefactProperty, ArtiefactRating
+)
 
 __all__ = [
     # account
     'ArtiefactUser', 'Username', 'Profile', 'ProfilePicture',
     # token
-    'AccessToken', 'AccessTokenUse'
-    # Email
-    'RegisteredEmail', 'EmailVerification', 'EmailVerificationRequest'
+    'AccessToken', 'AccessTokenUse',
+    # email
+    'RegisteredEmail', 'EmailVerification', 'EmailVerificationRequest',
+    # artiefact
+    'Artiefact', 'ArtiefactDiscovery', 'ArtiefactImage', 'ArtiefactProperty', 'ArtiefactRating'
 ]

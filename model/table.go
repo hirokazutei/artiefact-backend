@@ -40,6 +40,160 @@ func GetAccessTokenByPk(db Queryer, pk0 string) (*AccessToken, error) {
 	return &r, nil
 }
 
+// Artiefact represents public.artiefact
+type Artiefact struct {
+	ID        int64         // id
+	UserID    sql.NullInt64 // user_id
+	CreatedAt time.Time     // created_at
+	Longitude sql.NullInt64 // longitude
+	Latitude  sql.NullInt64 // latitude
+}
+
+// Create inserts the Artiefact to the database.
+func (r *Artiefact) Create(db Queryer) error {
+	err := db.QueryRow(
+		`INSERT INTO artiefact (user_id, created_at, longitude, latitude) VALUES ($1, $2, $3, $4) RETURNING id`,
+		&r.UserID, &r.CreatedAt, &r.Longitude, &r.Latitude).Scan(&r.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert artiefact")
+	}
+	return nil
+}
+
+// GetArtiefactByPk select the Artiefact from the database.
+func GetArtiefactByPk(db Queryer, pk0 int64) (*Artiefact, error) {
+	var r Artiefact
+	err := db.QueryRow(
+		`SELECT id, user_id, created_at, longitude, latitude FROM artiefact WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.UserID, &r.CreatedAt, &r.Longitude, &r.Latitude)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select artiefact")
+	}
+	return &r, nil
+}
+
+// ArtiefactDiscovery represents public.artiefact_discovery
+type ArtiefactDiscovery struct {
+	ArtiefactID int64         // artiefact_id
+	UserID      sql.NullInt64 // user_id
+	UploadedAt  time.Time     // uploaded_at
+}
+
+// Create inserts the ArtiefactDiscovery to the database.
+func (r *ArtiefactDiscovery) Create(db Queryer) error {
+	_, err := db.Exec(
+		`INSERT INTO artiefact_discovery (artiefact_id, user_id, uploaded_at) VALUES ($1, $2, $3)`,
+		&r.ArtiefactID, &r.UserID, &r.UploadedAt)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert artiefact_discovery")
+	}
+	return nil
+}
+
+// GetArtiefactDiscoveryByPk select the ArtiefactDiscovery from the database.
+func GetArtiefactDiscoveryByPk(db Queryer, pk0 int64) (*ArtiefactDiscovery, error) {
+	var r ArtiefactDiscovery
+	err := db.QueryRow(
+		`SELECT artiefact_id, user_id, uploaded_at FROM artiefact_discovery WHERE artiefact_id = $1`,
+		pk0).Scan(&r.ArtiefactID, &r.UserID, &r.UploadedAt)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select artiefact_discovery")
+	}
+	return &r, nil
+}
+
+// ArtiefactImage represents public.artiefact_image
+type ArtiefactImage struct {
+	ArtiefactID int64     // artiefact_id
+	URI         string    // uri
+	UploadedAt  time.Time // uploaded_at
+}
+
+// Create inserts the ArtiefactImage to the database.
+func (r *ArtiefactImage) Create(db Queryer) error {
+	_, err := db.Exec(
+		`INSERT INTO artiefact_image (artiefact_id, uri, uploaded_at) VALUES ($1, $2, $3)`,
+		&r.ArtiefactID, &r.URI, &r.UploadedAt)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert artiefact_image")
+	}
+	return nil
+}
+
+// GetArtiefactImageByPk select the ArtiefactImage from the database.
+func GetArtiefactImageByPk(db Queryer, pk0 int64) (*ArtiefactImage, error) {
+	var r ArtiefactImage
+	err := db.QueryRow(
+		`SELECT artiefact_id, uri, uploaded_at FROM artiefact_image WHERE artiefact_id = $1`,
+		pk0).Scan(&r.ArtiefactID, &r.URI, &r.UploadedAt)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select artiefact_image")
+	}
+	return &r, nil
+}
+
+// ArtiefactProperty represents public.artiefact_property
+type ArtiefactProperty struct {
+	ArtiefactID   int64          // artiefact_id
+	Hint          sql.NullString // hint
+	Description   sql.NullString // description
+	ArtiefactType sql.NullString // artiefact_type
+}
+
+// Create inserts the ArtiefactProperty to the database.
+func (r *ArtiefactProperty) Create(db Queryer) error {
+	_, err := db.Exec(
+		`INSERT INTO artiefact_property (artiefact_id, hint, description, artiefact_type) VALUES ($1, $2, $3, $4)`,
+		&r.ArtiefactID, &r.Hint, &r.Description, &r.ArtiefactType)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert artiefact_property")
+	}
+	return nil
+}
+
+// GetArtiefactPropertyByPk select the ArtiefactProperty from the database.
+func GetArtiefactPropertyByPk(db Queryer, pk0 int64) (*ArtiefactProperty, error) {
+	var r ArtiefactProperty
+	err := db.QueryRow(
+		`SELECT artiefact_id, hint, description, artiefact_type FROM artiefact_property WHERE artiefact_id = $1`,
+		pk0).Scan(&r.ArtiefactID, &r.Hint, &r.Description, &r.ArtiefactType)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select artiefact_property")
+	}
+	return &r, nil
+}
+
+// ArtiefactRating represents public.artiefact_rating
+type ArtiefactRating struct {
+	ArtiefactID int64         // artiefact_id
+	UserID      sql.NullInt64 // user_id
+	RatedAt     time.Time     // rated_at
+	Rating      int16         // rating
+}
+
+// Create inserts the ArtiefactRating to the database.
+func (r *ArtiefactRating) Create(db Queryer) error {
+	_, err := db.Exec(
+		`INSERT INTO artiefact_rating (artiefact_id, user_id, rated_at, rating) VALUES ($1, $2, $3, $4)`,
+		&r.ArtiefactID, &r.UserID, &r.RatedAt, &r.Rating)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert artiefact_rating")
+	}
+	return nil
+}
+
+// GetArtiefactRatingByPk select the ArtiefactRating from the database.
+func GetArtiefactRatingByPk(db Queryer, pk0 int64) (*ArtiefactRating, error) {
+	var r ArtiefactRating
+	err := db.QueryRow(
+		`SELECT artiefact_id, user_id, rated_at, rating FROM artiefact_rating WHERE artiefact_id = $1`,
+		pk0).Scan(&r.ArtiefactID, &r.UserID, &r.RatedAt, &r.Rating)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select artiefact_rating")
+	}
+	return &r, nil
+}
+
 // ArtiefactUser represents public.artiefact_user
 type ArtiefactUser struct {
 	ID               int64     // id
@@ -196,19 +350,18 @@ func GetProfilePictureByPk(db Queryer, pk0 int64) (*ProfilePicture, error) {
 
 // RegisteredEmail represents public.registered_email
 type RegisteredEmail struct {
-	ID               int64     // id
-	UserID           int64     // user_id
-	Email            string    // email
-	EmailLower       string    // email_lower
-	LastUsedDatetime time.Time // last_used_datetime
-	Status           string    // status
+	ID         int64  // id
+	UserID     int64  // user_id
+	Email      string // email
+	EmailLower string // email_lower
+	Status     string // status
 }
 
 // Create inserts the RegisteredEmail to the database.
 func (r *RegisteredEmail) Create(db Queryer) error {
 	err := db.QueryRow(
-		`INSERT INTO registered_email (user_id, email, email_lower, last_used_datetime, status) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-		&r.UserID, &r.Email, &r.EmailLower, &r.LastUsedDatetime, &r.Status).Scan(&r.ID)
+		`INSERT INTO registered_email (user_id, email, email_lower, status) VALUES ($1, $2, $3, $4) RETURNING id`,
+		&r.UserID, &r.Email, &r.EmailLower, &r.Status).Scan(&r.ID)
 	if err != nil {
 		return errors.Wrap(err, "failed to insert registered_email")
 	}
@@ -219,8 +372,8 @@ func (r *RegisteredEmail) Create(db Queryer) error {
 func GetRegisteredEmailByPk(db Queryer, pk0 int64) (*RegisteredEmail, error) {
 	var r RegisteredEmail
 	err := db.QueryRow(
-		`SELECT id, user_id, email, email_lower, last_used_datetime, status FROM registered_email WHERE id = $1`,
-		pk0).Scan(&r.ID, &r.UserID, &r.Email, &r.EmailLower, &r.LastUsedDatetime, &r.Status)
+		`SELECT id, user_id, email, email_lower, status FROM registered_email WHERE id = $1`,
+		pk0).Scan(&r.ID, &r.UserID, &r.Email, &r.EmailLower, &r.Status)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select registered_email")
 	}
