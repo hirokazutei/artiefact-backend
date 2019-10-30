@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import Date, Column, DateTime, ForeignKey
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.dialects.postgresql import TEXT, BIGINT, SMALLINT
+from sqlalchemy.dialects.postgresql import TEXT, BIGINT, SMALLINT, FLOAT
 
 from . import Base
 
@@ -14,10 +14,31 @@ class Artiefact(Base):
     id = Column(BIGINT, primary_key=True)
     user_id = Column(BIGINT, ForeignKey('artiefact_user.id'), index=True)
     created_at = Column(DateTime(timezone=True), nullable=False)
+    hint = Column(TEXT, nullable=True)
+    type = Column(TEXT, nullable=True)
+
+    user = relationship('ArtiefactUser', backref=backref('Artiefact', uselist=False))
+
+class ArtiefactLocation(Base):
+    """Artiefact Location"""
+
+    __tablename__ = 'artiefact_location'
+
+    artiefact_id = Column(BIGINT, ForeignKey('artiefact.id'), primary_key=True)
     longitude = Column(BIGINT, index=True)
     latitude = Column(BIGINT, index=True)
 
-    user = relationship('ArtiefactUser', backref=backref('Artiefact', uselist=False))
+
+class ArtiefactText(Base):
+    """Artiefact Text"""
+
+    __tablename__ = "artiefact_text"
+
+    artiefact_id = Column(BIGINT, ForeignKey('artiefact.id'), primary_key=True)
+    title = Column(TEXT, nullable=False)
+    text = Column(TEXT, nullable=True)
+
+    artiefact = relationship('Artiefact', backref=backref('ArtiefactText', uselist=False))
 
 
 class ArtiefactImage(Base):
@@ -26,23 +47,36 @@ class ArtiefactImage(Base):
     __tablename__ = 'artiefact_image'
 
     artiefact_id = Column(BIGINT, ForeignKey('artiefact.id'), primary_key=True)
+    description = Column(TEXT, nullable=True)
     uri = Column(TEXT, nullable=False)
-    uploaded_at = Column(DateTime(timezone=True), nullable=False)
 
     artiefact = relationship('Artiefact', backref=backref('ArtiefactImage', uselist=False))
 
 
-class ArtiefactProperty(Base):
-    """Artiefact Property"""
+class ArtiefactAudio(Base):
+    """Artiefact Audio"""
 
-    __tablename__ = 'artiefact_property'
+    __tablename__ = 'artiefact_audio'
 
     artiefact_id = Column(BIGINT, ForeignKey('artiefact.id'), primary_key=True)
-    hint = Column(TEXT, nullable=True)
     description = Column(TEXT, nullable=True)
-    artiefact_type = Column(TEXT, nullable=True)
+    duration = Column(FLOAT, nullable=False)
+    uri = Column(TEXT, nullable=False)
 
-    artiefact = relationship('Artiefact', backref=backref('ArtiefactProperty', uselist=False))
+    artiefact = relationship('Artiefact', backref=backref('ArtiefactAudio', uselist=False))
+
+
+class ArtiefactVideo(Base):
+    """Artiefact Video"""
+
+    __tablename__ = 'artiefact_video'
+
+    artiefact_id = Column(BIGINT, ForeignKey('artiefact.id'), primary_key=True)
+    description = Column(TEXT, nullable=True)
+    duration = Column(FLOAT, nullable=False)
+    uri = Column(TEXT, nullable=False)
+
+    artiefact = relationship('Artiefact', backref=backref('ArtiefactVideo', uselist=False))
 
 
 class ArtiefactDiscovery(Base):

@@ -12,6 +12,17 @@ type AccessToken struct {
 	UserID            int64     `json:"user_id"`
 }
 
+// ArtiefactObject struct for artiefact_object resource
+type ArtiefactObject struct {
+	Hint      string  `json:"hint"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Text      string  `json:"text,omitempty"`
+	Title     string  `json:"title,omitempty"`
+	Type      string  `json:"type"`
+	UserID    int64   `json:"user_id"`
+}
+
 // ArtiefactUser struct for artiefact_user resource
 type ArtiefactUser struct {
 	Birthday         string    `json:"birthday"`
@@ -27,6 +38,24 @@ type RegisteredEmail struct {
 	Email  string `json:"email"`
 	ID     int64  `json:"id"`
 	Status string `json:"status"`
+}
+
+// ArtiefactObjectPostTextRequest struct for artiefact_object
+// POST: /artiefact/text
+type ArtiefactObjectPostTextRequest struct {
+	Hint      string  `json:"hint"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Text      string  `json:"text,omitempty"`
+	Title     string  `json:"title,omitempty"`
+	Type      string  `json:"type"`
+	UserID    int64   `json:"user_id"`
+}
+
+// ArtiefactObjectPostTextResponse struct for artiefact_object
+// POST: /artiefact/text
+type ArtiefactObjectPostTextResponse struct {
+	ArtiefactObject *ArtiefactObject `json:"artiefact_object,omitempty"`
 }
 
 // ArtiefactUserGetUserResponse struct for artiefact_user

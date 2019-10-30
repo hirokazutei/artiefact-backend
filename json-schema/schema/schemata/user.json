@@ -23,7 +23,7 @@
     "birthday": {
       "description": "birthdate of the user",
       "readOnly": true,
-      "pattern": "^[1-2]{1}[0-9]{3}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}",
+      "pattern": "^[1-2]{1}[0-9]{3}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}$",
       "example": "1991-04-26",
       "type": ["string"]
     },
@@ -50,7 +50,7 @@
     },
     "username": {
       "description": "name of the user",
-      "pattern": "^[0-9a-zA-Z._-]{4,32}",
+      "pattern": "^[0-9a-zA-Z._-]{4,32}$",
       "example": "hirokazu.tei",
       "type": ["string"]
     }
@@ -88,7 +88,7 @@
             "$ref": "/schemata/access_token"
           }
         },
-        "required": ["user", "token"],
+        "required": ["artiefact_user", "access_token"],
         "type": ["object"]
       },
       "title": "sign-up"

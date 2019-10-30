@@ -19,7 +19,14 @@ from .email import (
     RegisteredEmail, EmailVerification, EmailVerificationRequest
 )
 from .artiefact import (
-    Artiefact, ArtiefactDiscovery, ArtiefactImage, ArtiefactProperty, ArtiefactRating
+    Artiefact,
+    ArtiefactAudio,
+    ArtiefactDiscovery,
+    ArtiefactImage,
+    ArtiefactLocation,
+    ArtiefactRating,
+    ArtiefactText,
+    ArtiefactVideo,
 )
 
 __all__ = [
@@ -30,5 +37,12 @@ __all__ = [
     # email
     'RegisteredEmail', 'EmailVerification', 'EmailVerificationRequest',
     # artiefact
-    'Artiefact', 'ArtiefactDiscovery', 'ArtiefactImage', 'ArtiefactProperty', 'ArtiefactRating'
+    'Artiefact',
+    'ArtiefactAudio',
+    'ArtiefactDiscovery',
+    'ArtiefactImage',
+    'ArtiefactLocation',
+    'ArtiefactRating'
+    'ArtiefactText',
+    'ArtiefactVideo',
 ]

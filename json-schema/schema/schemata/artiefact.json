@@ -1,0 +1,149 @@
+{
+  "title": "artiefact_object",
+  "description": "artiefact_object",
+  "stability": "prototype",
+  "strictProperties": true,
+  "type": ["object"],
+  "definitions": {
+    "user_id": {
+      "$ref": "/schemata/artiefact_user#/definitions/id"
+    },
+    "id": {
+      "description": "the ID of the artiefact object",
+      "readOnly": true,
+      "example": 13124,
+      "type": ["integer"]
+    },
+    "hint": {
+      "description": "the hint for the artiefact object",
+      "example": "Cherry blossoms during spring",
+      "pattern": "^.{0,140}$",
+      "type": ["string"]
+    },
+    "type": {
+      "description": "the type of the artiefact object",
+      "example": "text",
+      "type": ["string"],
+      "enum": ["text", "image", "audieo", "video"]
+    },
+    "longitude": {
+      "description": "the longitude of the artiefact object",
+      "example": 35.6762,
+      "type": ["number"]
+    },
+    "latitude": {
+      "description": "the latitude of the artiefact object",
+      "example": 139.6503,
+      "type": ["number"]
+    },
+    "title": {
+      "description": "the title of the text artiefact",
+      "example": "Cherry Blossoms",
+      "pattern": "^.{1,64}$",
+      "type": ["string"]
+    },
+    "text": {
+      "description": "the title of the text artiefact",
+      "example": "The Cherry Blossoms During The Midth of Spring",
+      "type": ["string"]
+    },
+    "description": {
+      "description": "the description of the media artiefact",
+      "example": "It might be a different season when you are looking at this, but during spring, the cherry blossoms bloom, flourishing the view with an incandescent pink",
+      "type": ["string"]
+    },
+    "image_data": {
+      "description": "the raw data of the image",
+      "readOnly": true,
+      "example": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/+EAWEV4aWYAAE1NACoAAAAIAAIBEgADAAAAAQABAACHaQAEAAAAAQAAACYAAAAAAAOgAQADAAAAAQABAACgAgAEAAAAAQAAANagAwAEAAAAAQAAANYAAAAA/+IM",
+      "media": {
+        "binaryEncoding": "base64",
+        "type": "image/*"
+      },
+      "type": ["string"]
+    },
+    "image_uri": {
+      "description": "the image uri of the image",
+      "readOnly": true,
+      "example": "http://lorempixel.com/600/600/",
+      "type": ["string"]
+    }
+  },
+  "links": [
+    {
+      "description": "post-text-artiefact",
+      "href": "/artiefact/text",
+      "method": "POST",
+      "rel": "post-text",
+      "schema": {
+        "properties": {
+          "user_id": {
+            "$ref": "/schemata/artiefact_user#/definitions/id"
+          },
+          "longitude": {
+            "$ref": "/schemata/artiefact_object#/definitions/longitude"
+          },
+          "latitude": {
+            "$ref": "/schemata/artiefact_object#/definitions/latitude"
+          },
+          "hint": {
+            "$ref": "/schemata/artiefact_object#/definitions/hint"
+          },
+          "type": {
+            "$ref": "/schemata/artiefact_object#/definitions/type"
+          },
+          "title": {
+            "$ref": "/schemata/artiefact_object#/definitions/title"
+          },
+          "text": {
+            "$ref": "/schemata/artiefact_object#/definitions/text"
+          }
+        },
+        "type": ["object"],
+        "required": [
+          "user_id",
+          "longitude",
+          "latitude",
+          "hint",
+          "type",
+          "title"
+        ]
+      },
+      "targetSchema": {
+        "properties": {
+          "artiefact_object": {
+            "$ref": "/schemata/artiefact_object"
+          }
+        },
+        "required": ["artiefact_object"],
+        "type": ["object"]
+      },
+      "title": "post-text-artiefact"
+    }
+  ],
+  "properties": {
+    "user_id": {
+      "$ref": "/schemata/artiefact_user#/definitions/id"
+    },
+    "longitude": {
+      "$ref": "/schemata/artiefact_object#/definitions/longitude"
+    },
+    "latitude": {
+      "$ref": "/schemata/artiefact_object#/definitions/latitude"
+    },
+    "hint": {
+      "$ref": "/schemata/artiefact_object#/definitions/hint"
+    },
+    "type": {
+      "$ref": "/schemata/artiefact_object#/definitions/type"
+    },
+    "title": {
+      "$ref": "/schemata/artiefact_object#/definitions/title"
+    },
+    "text": {
+      "$ref": "/schemata/artiefact_object#/definitions/text"
+    }
+  },
+  "required": ["user_id", "longitude", "latitude", "hint", "type"],
+  "id": "schemata/artiefact_object"
+}
