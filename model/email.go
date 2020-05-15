@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -11,7 +12,7 @@ func IfEmailExist(db Queryer, email string) (bool, error) {
 	var foundEmail string
 	err := db.QueryRow(
 		`SELECT email_lower FROM registered_email WHERE email_lower = $1`,
-		email).Scan(&foundEmail)
+		strings.ToLower(email)).Scan(&foundEmail)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil
