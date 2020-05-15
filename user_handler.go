@@ -81,7 +81,8 @@ func (app *UserApp) SignUpHandler(w http.ResponseWriter, r *http.Request) (int, 
 	// Unverified email should restrict features, not prevent users from accessing basic features
 
 	// Check if Username is taken
-	usernameExists, err := model.IfUsernameExist(tx, param.Username)
+	username := strings.ToLower(param.Username)
+	usernameExists, err := model.IfUsernameExist(tx, username)
 	if err != nil {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "username"))
@@ -232,7 +233,8 @@ func (app *UserApp) SignInHandler(w http.ResponseWriter, r *http.Request) (int, 
 	}
 	defer tx.Rollback()
 
-	au, err := model.GetArtiefactUserByUsername(tx, param.Username)
+	username := strings.ToLower(param.Username)
+	au, err := model.GetArtiefactUserByUsername(tx, username)
 	if err != nil {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "artiefact_user"))
@@ -391,7 +393,8 @@ func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.R
 	}
 	defer tx.Rollback()
 
-	_, found, err := model.GetUsernameByUsername(tx, param.Username)
+	username := strings.ToLower(param.Username)
+	_, found, err := model.GetUsernameByUsername(tx, username)
 	if err != nil {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "username"))
