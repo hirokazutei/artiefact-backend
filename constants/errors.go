@@ -34,6 +34,7 @@ const (
 const (
 	ErrorTypeObjectAlreadyExists = "the object already exists"
 	ErrorTypeInvalidHeader       = "the request header was invalid"
+	ErrorTypeInvalidRequest      = "the request was invalid"
 	ErrorTypeUnknown             = "the server encountered an unknown error"
 )
 
@@ -161,6 +162,14 @@ func ErrorAlreadyExists(object string) *Error {
 		Status: http.StatusConflict,
 		Type:   ErrorTypeObjectAlreadyExists,
 		Detail: ErrorMessageObjectAlreadyExists(object),
+	}
+}
+
+// ErrorBadRequest returns Bad Request Error
+func ErrorBadRequest() *Error {
+	return &Error{
+		Status: http.StatusBadRequest,
+		Type:   ErrorTypeInvalidRequest,
 	}
 }
 
