@@ -371,14 +371,7 @@ func (app *UserApp) GetUserHandler(w http.ResponseWriter, r *http.Request) (int,
 
 // UsernameAvailabilityHandler check to see if the username is available
 func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	u, err := url.Parse(r.URL.RawQuery)
-	if err != nil {
-		e := c.ErrorBadRequest()
-		e.AddDetail(c.ErrorAction("parsing", "request"))
-		fmt.Println(err.Error())
-		return e.GenerateResponse()
-	}
-	m, err := url.ParseQuery(u.RawQuery)
+	m, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		e := c.ErrorBadRequest()
 		e.AddDetail(c.ErrorAction("parsing", "request"))
