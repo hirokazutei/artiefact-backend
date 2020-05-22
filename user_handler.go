@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -370,18 +371,22 @@ func (app *UserApp) GetUserHandler(w http.ResponseWriter, r *http.Request) (int,
 
 // UsernameAvailabilityHandler check to see if the username is available
 func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	var param schema.ArtiefactUserUsernameAvailabilityRequest
-
-	// Validate the JSON coming in with the appropriate JSON-Schema Validator
-	res, err := schema.Validate(&param, schema.ArtiefactUserUsernameAvailabilityValidator, r)
-	fmt.Println(res)
-
+	u, err := url.Parse(r.URL.RawQuery)
 	if err != nil {
-		e := c.ErrorInternalServer()
-		e.AddDetail(c.ErrorAction("generating", "password"))
+		e := c.ErrorBadRequest()
+		e.AddDetail(c.ErrorAction("parsing", "request"))
 		fmt.Println(err.Error())
 		return e.GenerateResponse()
 	}
+	m, err := url.ParseQuery(u.RawQuery)
+	if err != nil {
+		e := c.ErrorBadRequest()
+		e.AddDetail(c.ErrorAction("parsing", "request"))
+		fmt.Println(err.Error())
+		return e.GenerateResponse()
+	}
+	username := m["username"][0]
+
 	// Begin Database
 	tx, err := app.DB.Begin()
 	if err != nil {
@@ -391,7 +396,7 @@ func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.R
 	}
 	defer tx.Rollback()
 
-	_, found, err := model.GetUsernameByUsername(tx, param.Username)
+	_, found, err := model.GetUsernameByUsername(tx, username)
 	if err != nil {
 		e := c.ErrorInternalServer()
 		e.AddDetail(c.ErrorAction("querying", "username"))
@@ -399,7 +404,7 @@ func (app *UserApp) UsernameAvailabilityHandler(w http.ResponseWriter, r *http.R
 		return e.GenerateResponse()
 	}
 	var response = schema.ArtiefactUserUsernameAvailabilityResponse{
-		Username:    param.Username,
+		Username:    username,
 		IsAvailable: false,
 	}
 

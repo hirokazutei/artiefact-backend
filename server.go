@@ -62,7 +62,7 @@ func Serve(confPath string) {
 		middlewareChain.Then(UserHandler{handler: userApp.SignInHandler}))
 	userRouter.Methods("POST").Path("/sign-up").Handler(
 		middlewareChain.Then(UserHandler{handler: userApp.SignUpHandler}))
-	userRouter.Methods("POST").Path("/username-availability").Handler(
+	userRouter.Methods("GET").Path("/username-availability").Handler(
 		middlewareChain.Then(UserHandler{handler: userApp.UsernameAvailabilityHandler}))
 
 	// listen and serve
